@@ -1,22 +1,22 @@
 import { ServiceReponseCode, ServiceReponseMessage, ServiceResponseHeader } from './src/lib';
 
 export class Service {
-    public static success(data: any): Response {
+    public static success(data: any, message: string = ServiceReponseMessage.SUCCESS_MESSAGE): Response {
         return new Response(
             JSON.stringify({
                 status: ServiceReponseCode.SUCCESS_CODE,
-                message: ServiceReponseMessage.SUCCESS_MESSAGE,
+                message,
                 data
             }),
             {
                 status: ServiceReponseCode.SUCCESS_CODE,
-                statusText: ServiceReponseMessage.SUCCESS_MESSAGE,
+                statusText: message,
                 headers: ServiceResponseHeader.JSON()
             }
         );
     }
 
-    public static clientError(reason: string): Response {
+    public static clientError(reason: string = ServiceReponseMessage.CLIENT_ERROR_MESSAGE): Response {
         return new Response(
             JSON.stringify({
                 status: ServiceReponseCode.CLIENT_ERROR_CODE,
@@ -24,69 +24,55 @@ export class Service {
             }),
             {
                 status: ServiceReponseCode.CLIENT_ERROR_CODE,
-                statusText: ServiceReponseMessage.CLIENT_ERROR_MESSAGE,
+                statusText: reason,
                 headers: ServiceResponseHeader.JSON()
             }
         );
     }
 
-    public static notFound(): Response {
+    public static notFound(reason: string = ServiceReponseMessage.NOT_FOUND_MESSAGE): Response {
         return new Response(
             JSON.stringify({
                 status: ServiceReponseCode.NOT_FOUND_CODE,
-                message: ServiceReponseMessage.NOT_FOUND_MESSAGE
+                message: reason
             }),
             {
                 status: ServiceReponseCode.NOT_FOUND_CODE,
-                statusText: ServiceReponseMessage.NOT_FOUND_MESSAGE,
+                statusText: reason,
                 headers: ServiceResponseHeader.JSON()
             }
         );
     }
 
-    public static unauthorized(): Response {
+    public static unauthorized(reason: string = ServiceReponseMessage.UNAUTHORIZED_MESSAGE): Response {
         return new Response(
             JSON.stringify({
                 status: ServiceReponseCode.UNAUTHORIZED_CODE,
-                message: ServiceReponseMessage.UNAUTHORIZED_MESSAGE
+                message: reason
             }),
             {
                 status: ServiceReponseCode.UNAUTHORIZED_CODE,
-                statusText: ServiceReponseMessage.UNAUTHORIZED_MESSAGE,
+                statusText: reason,
                 headers: ServiceResponseHeader.JSON()
             }
         );
     }
 
-    public static gatewayTimeout(): Response {
+    public static gatewayTimeout(reason: string = ServiceReponseMessage.GATEWAY_TIMEOUT_MESSAGE): Response {
         return new Response(
             JSON.stringify({
                 status: ServiceReponseCode.GATEWAY_TIMEOUT_CODE,
-                message: ServiceReponseMessage.GATEWAY_TIMEOUT_MESSAGE
+                message: reason
             }),
             {
                 status: ServiceReponseCode.GATEWAY_TIMEOUT_CODE,
-                statusText: ServiceReponseMessage.GATEWAY_TIMEOUT_MESSAGE,
+                statusText: reason,
                 headers: ServiceResponseHeader.JSON()
             }
         );
     }
 
-    public static serverError(): Response {
-        return new Response(
-            JSON.stringify({
-                status: ServiceReponseCode.SERVER_ERROR_CODE,
-                message: ServiceReponseMessage.SERVER_ERROR_MESSAGE
-            }),
-            {
-                status: ServiceReponseCode.SERVER_ERROR_CODE,
-                statusText: ServiceReponseMessage.SERVER_ERROR_MESSAGE,
-                headers: ServiceResponseHeader.JSON()
-            }
-        );
-    }
-
-    public static unknownError(reason: string): Response {
+    public static serverError(reason: string = ServiceReponseMessage.SERVER_ERROR_MESSAGE): Response {
         return new Response(
             JSON.stringify({
                 status: ServiceReponseCode.SERVER_ERROR_CODE,
@@ -94,7 +80,21 @@ export class Service {
             }),
             {
                 status: ServiceReponseCode.SERVER_ERROR_CODE,
-                statusText: ServiceReponseMessage.SERVER_ERROR_MESSAGE,
+                statusText: reason,
+                headers: ServiceResponseHeader.JSON()
+            }
+        );
+    }
+
+    public static unknownError(reason: string = ServiceReponseMessage.SERVER_ERROR_MESSAGE): Response {
+        return new Response(
+            JSON.stringify({
+                status: ServiceReponseCode.SERVER_ERROR_CODE,
+                message: reason
+            }),
+            {
+                status: ServiceReponseCode.SERVER_ERROR_CODE,
+                statusText: reason,
                 headers: ServiceResponseHeader.JSON()
             }
         );
