@@ -1,20 +1,20 @@
-export interface AxiosRequestConfig {
+export interface FetchRequestConfig {
     url: string;
     method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
-    headers?: Record<string, string>;
+    headers?: Headers;
     params?: Record<string, any>;
-    body?: any;
+    body?: string | FormData | Record<string, any>;
     responseType?: 'json' | 'text' | 'blob';
 }
 
-export interface AxiosResponse<T = any> {
+export interface FetchResponse<T = any> {
     data: T;
     status: number;
     statusText: string;
-    headers: Record<string, string>;
-    config: AxiosRequestConfig;
+    headers: Headers;
+    config: FetchRequestConfig;
     request: Response;
 }
 
-export type AxiosInterceptor<T> = (value: T) => T | Promise<T>;
-export type AxiosErrorInterceptor = (error: any) => any;
+export type FetchInterceptor<T> = (value: T) => T | Promise<T>;
+export type FetchErrorInterceptor = (error: any) => any;

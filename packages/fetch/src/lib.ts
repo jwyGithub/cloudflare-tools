@@ -1,11 +1,11 @@
-import type { AxiosErrorInterceptor, AxiosInterceptor, AxiosRequestConfig, AxiosResponse } from './types';
+import type { FetchErrorInterceptor, FetchInterceptor, FetchRequestConfig, FetchResponse } from './types';
 
 export class FetchClient {
-    private requestInterceptors: AxiosInterceptor<AxiosRequestConfig>[] = [];
-    private responseInterceptors: AxiosInterceptor<AxiosResponse<any>>[] = [];
-    private errorInterceptors: AxiosErrorInterceptor[] = [];
+    private requestInterceptors: FetchInterceptor<FetchRequestConfig>[] = [];
+    private responseInterceptors: FetchInterceptor<FetchResponse<any>>[] = [];
+    private errorInterceptors: FetchErrorInterceptor[] = [];
 
-    async request<T = any>(config: AxiosRequestConfig): Promise<AxiosResponse<T>> {
+    async request<T = any>(config: FetchRequestConfig): Promise<FetchResponse<T>> {
         try {
             // 执行请求拦截器
             for (const interceptor of this.requestInterceptors) {
@@ -40,7 +40,7 @@ export class FetchClient {
                     break;
             }
 
-            let responseData: AxiosResponse<T> = {
+            let responseData: FetchResponse<T> = {
                 data,
                 status: response.status,
                 statusText: response.statusText,
@@ -65,38 +65,38 @@ export class FetchClient {
         }
     }
 
-    get<T = any>(url: string, config?: Omit<AxiosRequestConfig, 'url' | 'method'>): Promise<AxiosResponse<T>> {
+    get<T = any>(url: string, config?: Omit<FetchRequestConfig, 'url' | 'method'>): Promise<FetchResponse<T>> {
         return this.request<T>({ ...config, url, method: 'GET' });
     }
 
-    post<T = any>(url: string, data?: any, config?: Omit<AxiosRequestConfig, 'url' | 'method' | 'body'>): Promise<AxiosResponse<T>> {
+    post<T = any>(url: string, data?: any, config?: Omit<FetchRequestConfig, 'url' | 'method' | 'body'>): Promise<FetchResponse<T>> {
         return this.request<T>({ ...config, url, method: 'POST', body: data });
     }
 
-    put<T = any>(url: string, data?: any, config?: Omit<AxiosRequestConfig, 'url' | 'method' | 'body'>): Promise<AxiosResponse<T>> {
+    put<T = any>(url: string, data?: any, config?: Omit<FetchRequestConfig, 'url' | 'method' | 'body'>): Promise<FetchResponse<T>> {
         return this.request<T>({ ...config, url, method: 'PUT', body: data });
     }
 
-    delete<T = any>(url: string, config?: Omit<AxiosRequestConfig, 'url' | 'method'>): Promise<AxiosResponse<T>> {
+    delete<T = any>(url: string, config?: Omit<FetchRequestConfig, 'url' | 'method'>): Promise<FetchResponse<T>> {
         return this.request<T>({ ...config, url, method: 'DELETE' });
     }
 
-    useRequestInterceptor(interceptor: AxiosInterceptor<AxiosRequestConfig>) {
+    useRequestInterceptor(interceptor: FetchInterceptor<FetchRequestConfig>) {
         this.requestInterceptors.push(interceptor);
     }
 
-    useResponseInterceptor(interceptor: AxiosInterceptor<AxiosResponse<any>>) {
+    useResponseInterceptor(interceptor: FetchInterceptor<FetchResponse<any>>) {
         this.responseInterceptors.push(interceptor);
     }
 
-    useErrorInterceptor(interceptor: AxiosErrorInterceptor) {
+    useErrorInterceptor(interceptor: FetchErrorInterceptor) {
         this.errorInterceptors.push(interceptor);
     }
 
-    private parseHeaders(headers: Headers): Record<string, string> {
-        const parsedHeaders: Record<string, string> = {};
+    private parseHeaders(headers: Headers): Headers {
+        const parsedHeaders = new Headers();
         headers.forEach((value, key) => {
-            parsedHeaders[key] = value;
+            parsedHeaders.set(key, value);
         });
         return parsedHeaders;
     }
