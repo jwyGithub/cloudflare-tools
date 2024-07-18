@@ -30,6 +30,6 @@
     ],
     "scripts": {
         "build": "vite build",
-        "publish": "vite build && npm publish --access public"
+        "release": "vite build && npm publish --access public"
     }
 }
