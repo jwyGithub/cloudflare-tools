@@ -14,7 +14,9 @@
     "main": "index.js",
     "scripts": {
         "build:service": "pnpm --dir packages/service run build",
-        "publish:service": "pnpm --dir packages/service run publish"
+        "publish:service": "pnpm --dir packages/service run publish",
+        "build:fetch": "pnpm --dir packages/fetch run build",
+        "publish:fetch": "pnpm --dir packages/fetch run publish"
     },
     "devDependencies": {
         "@cloudflare/workers-types": "^4.20240712.0",
