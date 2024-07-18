@@ -13,7 +13,8 @@
     ],
     "main": "index.js",
     "scripts": {
-        "build:service": "pnpm --dir packages/service run build"
+        "build:service": "pnpm --dir packages/service run build",
+        "publish:service": "pnpm --dir packages/service run publish"
     },
     "devDependencies": {
         "@cloudflare/workers-types": "^4.20240712.0",

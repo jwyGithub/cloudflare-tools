@@ -28,6 +28,7 @@
         "dist"
     ],
     "scripts": {
-        "build": "vite build"
+        "build": "vite build",
+        "publish": "vite build && npm publish --access public"
     }
 }
