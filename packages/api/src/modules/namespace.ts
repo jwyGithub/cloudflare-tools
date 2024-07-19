@@ -23,12 +23,48 @@ export class Namespace extends CloudflareAPI {
     }
 
     /**
-     * @description 获取所有value
+     * @description 创建namespace
+     * @param {IApiContent} values 替换参数
+     * @returns {string} 返回格式化后的URL
+     */
+    public static CREATE(values: IApiContent): string {
+        return this.format(`${BASE_URL}${this.MODULE_URL}`, values);
+    }
+
+    /**
+     * @description 删除namespace
+     * @param {IApiContent} values 替换参数
+     * @returns {string} 返回格式化后的URL
+     */
+    public static REMOVE(values: Pick<IApiContent, 'account_id' | 'kvnamespace'>): string {
+        return this.format(`${BASE_URL}${this.MODULE_URL}/{{kvnamespace}}`, values);
+    }
+
+    /**
+     * @description 获取value
      * @param {IApiContent} values 替换参数
      * @returns {string} 返回格式化后的URL
      */
     public static GET_VALUE(values: IApiContent): string {
         return this.format(`${this.GET_ALL(values)}/{{kvnamespace}}/values/{{value}}`, values);
+    }
+
+    /**
+     * @description 创建value
+     * @param {IApiContent} values 替换参数
+     * @returns {string} 返回格式化后的URL
+     */
+    public static CREATE_VALUE(values: IApiContent): string {
+        return this.format(`${this.GET_ALL(values)}/{{kvnamespace}}/values/{key_name}`, values);
+    }
+
+    /**
+     * @description 删除value
+     * @param {IApiContent} values 替换参数
+     * @returns {string} 返回格式化后的URL
+     */
+    public static REMOVE_VALUE(values: IApiContent): string {
+        return this.format(`${this.GET_ALL(values)}/{{kvnamespace}}/values/{{key_name}}`, values);
     }
 }
 
@@ -48,10 +84,34 @@ export class NamespaceMap {
     static GET_KEYS = `/api/${this.MODULE}/get_keys`;
 
     /**
+     * @description 创建namespace
+     * @default `/api/namespace/create`
+     */
+    static CREATE = `/api/${this.MODULE}/create`;
+
+    /**
+     * @description 删除namespace
+     * @default `/api/namespace/remove`
+     */
+    static REMOVE = `/api/${this.MODULE}/remove`;
+
+    /**
      * @description 获取value
      * @default `/api/namespace/get_value`
      */
     static GET_VALUE = `/api/${this.MODULE}/get_value`;
+
+    /**
+     * @description 创建value
+     * @default `/api/namespace/create_value`
+     */
+    static CREATE_VALUE = `/api/${this.MODULE}/create_value`;
+
+    /**
+     * @description 删除value
+     * @default `/api/namespace/remove_value`
+     */
+    static REMOVE_VALUE = `/api/${this.MODULE}/remove_value`;
 
     /**
      * @description 用户模块URL映射
@@ -59,7 +119,11 @@ export class NamespaceMap {
     static URL_MAP = new Map<string, (v: IApiContent) => string>([
         [this.GET_ALL, Namespace.GET_ALL],
         [this.GET_KEYS, Namespace.GET_KEYS],
-        [this.GET_VALUE, Namespace.GET_VALUE]
+        [this.GET_VALUE, Namespace.GET_VALUE],
+        [this.CREATE, Namespace.CREATE],
+        [this.REMOVE, Namespace.REMOVE],
+        [this.CREATE_VALUE, Namespace.CREATE_VALUE],
+        [this.REMOVE_VALUE, Namespace.REMOVE_VALUE]
     ]);
 
     /**
