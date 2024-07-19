@@ -1,0 +1,36 @@
+{
+    "name": "@jiangweiye/cloudflare-api",
+    "type": "module",
+    "version": "0.0.1",
+    "description": "cloudflare-service-api",
+    "author": "jiangweiye <jiangweiye@outlook.com> (https://github.com/jwyGithub)",
+    "license": "SEE LICENSE IN LICENSE.md",
+    "homepage": "https://github.com/jwyGithub/cloudflare-shared",
+    "publishConfig": {
+        "access": "public"
+    },
+    "keywords": [
+        "cloudflare",
+        "service",
+        "worker",
+        "api"
+    ],
+    "exports": {
+        ".": {
+            "types": "./dist/types/index.d.ts",
+            "import": "./dist/index.js",
+            "require": "./dist/index.umd.cjs"
+        }
+    },
+    "main": "./dist/index.umd.cjs",
+    "module": "./dist/index.js",
+    "types": "./dist/types/index.d.ts",
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "vite build",
+        "release": "vite build && npm publish --access public",
+        "test": "vitest"
+    }
+}
