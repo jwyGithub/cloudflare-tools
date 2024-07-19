@@ -2,7 +2,7 @@ import { BASE_URL, CloudflareAPI } from '../lib';
 import type { IApiContent } from '../types';
 
 export class Namespace extends CloudflareAPI {
-    public static MODULE_URL = '/accounts/{{account_id}}/storage/kv/namespaces';
+    public static readonly MODULE_URL = '/accounts/{{account_id}}/storage/kv/namespaces';
 
     /**
      * @description 获取所有namespace
@@ -35,19 +35,39 @@ export class Namespace extends CloudflareAPI {
 export class NamespaceMap {
     static MODULE = 'namespace';
 
-    static GET_ALL = `/api/${this.MODULE}/get_all`;
+    /**
+     * @description 获取所有namespace
+     * @default `/api/namespace/get_all`
+     */
+    public static readonly GET_ALL = `/api/${this.MODULE}/get_all`;
 
+    /**
+     * @description 获取所有namespace keys
+     * @default `/api/namespace/get_keys`
+     */
     static GET_KEYS = `/api/${this.MODULE}/get_keys`;
 
+    /**
+     * @description 获取value
+     * @default `/api/namespace/get_value`
+     */
     static GET_VALUE = `/api/${this.MODULE}/get_value`;
 
+    /**
+     * @description 用户模块URL映射
+     */
     static URL_MAP = new Map<string, (v: IApiContent) => string>([
         [this.GET_ALL, Namespace.GET_ALL],
         [this.GET_KEYS, Namespace.GET_KEYS],
         [this.GET_VALUE, Namespace.GET_VALUE]
     ]);
 
-    static find(key: INamespaceMapKey, values: IApiContent = {}) {
+    /**
+     * @description 获取用户模块URL
+     * @param {INamespaceMapKey} key
+     * @returns {string}
+     */
+    static find(key: INamespaceMapKey, values: IApiContent = {}): string {
         const url = this.URL_MAP.get(this[key]);
         if (!url) {
             throw new Error(`NamespaceMap URL_MAP not found key: ${key}`);
