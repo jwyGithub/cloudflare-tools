@@ -1,11 +1,6 @@
 import { fetchClient } from '../../../fetch/index';
 
 fetchClient.useRequestInterceptor(config => {
-    // console.log('Request Interceptor:', config);
-    config.headers = {
-        ...config.headers,
-        Authorization: 'Bearer token'
-    };
     return config;
 });
 
