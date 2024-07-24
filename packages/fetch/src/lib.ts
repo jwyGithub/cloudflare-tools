@@ -35,6 +35,12 @@ export class FetchClient {
                     data = await response.blob();
                     break;
                 case 'json':
+                    if (response.headers.get('content-type')?.includes('stream')) {
+                        data = await response.text();
+                    } else {
+                        data = await response.json();
+                    }
+                    break;
                 default:
                     data = await response.json();
                     break;

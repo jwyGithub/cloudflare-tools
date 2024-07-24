@@ -4,4 +4,6 @@ export interface IApiContent {
     kvnamespace?: string;
 
     value?: string;
+
+    key_name?: string;
 }
