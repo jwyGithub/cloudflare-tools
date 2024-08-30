@@ -6,7 +6,10 @@ export class TextCode {
      */
     public static base64Encode(s: string): string {
         const utf8Bytes = new TextEncoder().encode(s);
-        const binaryString = String.fromCharCode(...utf8Bytes);
+        let binaryString = '';
+        for (let i = 0; i < utf8Bytes.length; i += 1) {
+            binaryString += String.fromCharCode(utf8Bytes[i]);
+        }
         return btoa(binaryString);
     }
 
@@ -17,7 +20,10 @@ export class TextCode {
      */
     public static base64Decode(s: string): string {
         const binaryString = atob(s);
-        const utf8Bytes = new Uint8Array([...binaryString].map(char => char.charCodeAt(0)));
+        const utf8Bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+            utf8Bytes[i] = binaryString.charCodeAt(i);
+        }
         return new TextDecoder().decode(utf8Bytes);
     }
 
