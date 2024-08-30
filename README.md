@@ -1,11 +1,12 @@
-# cloudflare-shared
+# cloudflare-tools
 
-cloudflare shared code.
+cloudflare tool code.
 
 ## Packages
 
 -   [@jiangweiye/cloudflare-service](#cloudflare-service)
 -   [@jiangweiye/cloudflare-fetch](#cloudflare-fetch)
+-   [@jiangweiye/cloudflare-shared](#cloudflare-shared)
 
 ### cloudflare-service
 
@@ -45,4 +46,43 @@ export declare class FetchClient {
     private parseHeaders;
 }
 export declare const fetchClient: FetchClient;
+```
+
+### cloudflare-shared
+
+[使用示例](https://github.com/jwyGithub/cloudflare-shared/tree/main/packages/shared)
+
+```typescript
+export declare class TextCode {
+    /**
+     * @description Base64 decode a string
+     * @param {string} s Encoded string
+     * @returns {string} - Decoded string
+     */
+    static base64Encode(s: string): string;
+    /**
+     * @description Base64 decode a string
+     * @param {string} s Encoded string
+     * @returns {string} - Decoded string
+     */
+    static base64Decode(s: string): string;
+    /**
+     * @description Convert a stream to text
+     * @param {ReadableStream} stream - ReadableStream
+     * @returns {Promise<string>} - Promise<string>
+     */
+    static streamToText(stream: ReadableStream): Promise<string>;
+    /**
+     * @description Convert a blob to text
+     * @param {Blob} blob - Blob
+     * @returns {Promise<string>} - Promise<string>
+     */
+    static blobToText(blob: Blob): Promise<string>;
+    /**
+     * @description Convert an array buffer to text
+     * @param {ArrayBuffer} buffer - ArrayBuffer
+     * @returns {string} - Text
+     */
+    static arrayBufferToText(buffer: ArrayBuffer): string;
+}
 ```

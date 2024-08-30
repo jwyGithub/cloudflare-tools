@@ -1,0 +1,34 @@
+{
+    "name": "@jiangweiye/cloudflare-shared",
+    "type": "module",
+    "version": "0.0.1",
+    "description": "cloudflare-shared",
+    "author": "jiangweiye <jiangweiye@outlook.com> (https://github.com/jwyGithub)",
+    "license": "SEE LICENSE IN LICENSE.md",
+    "homepage": "https://github.com/jwyGithub/cloudflare-tools",
+    "publishConfig": {
+        "access": "public"
+    },
+    "keywords": [
+        "cloudflare",
+        "shared",
+        "worker"
+    ],
+    "exports": {
+        ".": {
+            "types": "./dist/types/index.d.ts",
+            "import": "./dist/index.js",
+            "require": "./dist/index.umd.cjs"
+        }
+    },
+    "main": "./dist/index.umd.cjs",
+    "module": "./dist/index.js",
+    "types": "./dist/types/index.d.ts",
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "vite build",
+        "release": "vite build && npm publish --access public"
+    }
+}
