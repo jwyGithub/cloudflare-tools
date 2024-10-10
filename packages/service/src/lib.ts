@@ -2,50 +2,92 @@ export type RESPONSE_TYPE = 'success' | 'error' | 'not_found' | 'unauthorized' |
 
 export type RESPONSE_CODE = 200 | 400 | 404 | 401 | 504 | 500;
 
-export class ServiceReponseCode {
-    static SUCCESS_CODE: RESPONSE_CODE = 200;
+/**
+ * @description success response code.
+ */
+export const RESPONSE_SUCCESS_CODE = 200;
 
-    static CLIENT_ERROR_CODE: RESPONSE_CODE = 400;
+/**
+ * @description client error response code.
+ */
+export const RESPONSE_CLIENT_ERROR_CODE = 400;
 
-    static NOT_FOUND_CODE: RESPONSE_CODE = 404;
+/**
+ * @description not found response code.
+ */
+export const RESPONSE_NOT_FOUND_CODE = 404;
 
-    static UNAUTHORIZED_CODE: RESPONSE_CODE = 401;
+/**
+ * @description unauthorized response code.
+ */
+export const RESPONSE_UNAUTHORIZED_CODE = 401;
 
-    static GATEWAY_TIMEOUT_CODE: RESPONSE_CODE = 504;
+/**
+ * @description gateway timeout response code.
+ */
+export const RESPONSE_GATEWAY_TIMEOUT_CODE = 504;
 
-    static SERVER_ERROR_CODE: RESPONSE_CODE = 500;
-}
+/**
+ * @description server error response code.
+ */
+export const RESPONSE_SERVER_ERROR_CODE = 500;
 
-export class ServiceReponseMessage {
-    static SUCCESS_MESSAGE: string = 'Success';
+/**
+ * @description success response message.
+ */
+export const RESPONSE_SUCCESS_MESSAGE = 'success';
 
-    static CLIENT_ERROR_MESSAGE: string = 'Bad Request';
+/**
+ * @description client error response message.
+ */
+export const RESPONSE_CLIENT_ERROR_MESSAGE = 'bad request';
 
-    static NOT_FOUND_MESSAGE: string = 'Not Found';
+/**
+ * @description not found response message.
+ */
+export const RESPONSE_NOT_FOUND_MESSAGE = 'not found';
 
-    static UNAUTHORIZED_MESSAGE: string = 'Unauthorized';
+/**
+ * @description unauthorized response message.
+ */
 
-    static GATEWAY_TIMEOUT_MESSAGE: string = 'Gateway Timeout';
+export const RESPONSE_UNAUTHORIZED_MESSAGE = 'unauthorized';
 
-    static SERVER_ERROR_MESSAGE: string = 'Internal Server Error';
-}
+/**
+ * @description gateway timeout response message.
+ */
+export const RESPONSE_GATEWAY_TIMEOUT_MESSAGE = 'gateway timeout';
 
-export class ServiceResponseHeader {
-    static JSON() {
-        return new Headers({
-            'Content-type': 'application/json'
-        });
-    }
+/**
+ * @description server error response message.
+ */
+export const RESPONSE_SERVER_ERROR_MESSAGE = 'internal server error';
 
-    static STREAM() {
-        return new Headers({
-            'Content-type': 'application/octet-stream'
-        });
-    }
+/**
+ * @description json response header.
+ */
+export const RESPONSE_JSON_HEADER = {
+    'Content-type': 'application/json'
+};
 
-    static TEXT() {
-        return new Headers({
-            'Content-type': 'text/plain'
-        });
-    }
-}
+/**
+ * @description stream response header.
+ */
+export const RESPONSE_STREAM_HEADER = {
+    'Content-type': 'application/octet-stream'
+};
+
+/**
+ * @description text response header.
+ */
+export const RESPONSE_TEXT_HEADER = {
+    'Content-type': 'text/plain'
+};
+
+/**
+ * @description html response header.
+ */
+
+export const RESPONSE_HTML_HEADER = {
+    'Content-type': 'text/html'
+};
