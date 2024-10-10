@@ -21,9 +21,10 @@ import type { RESPONSE_CODE } from './src/lib';
  *
  * @param data - The data to include in the response body.
  * @param message - The message to include in the response body and status text. Defaults to `RESPONSE_SUCCESS_MESSAGE`.
+ * @param headers - Optional. The headers to include in the response. Defaults to `RESPONSE_JSON_HEADER`.
  * @returns A `Response` object with a JSON body containing the status, message, and data.
  */
-export const toSuccess = (data: any, message: string = RESPONSE_SUCCESS_MESSAGE): Response => {
+export const toSuccess = (data: any, message: string = RESPONSE_SUCCESS_MESSAGE, headers: Headers = RESPONSE_JSON_HEADER): Response => {
     return new Response(
         JSON.stringify({
             status: RESPONSE_SUCCESS_CODE,
@@ -33,7 +34,7 @@ export const toSuccess = (data: any, message: string = RESPONSE_SUCCESS_MESSAGE)
         {
             status: RESPONSE_SUCCESS_CODE,
             statusText: message,
-            headers: RESPONSE_JSON_HEADER
+            headers
         }
     );
 };
@@ -42,14 +43,13 @@ export const toSuccess = (data: any, message: string = RESPONSE_SUCCESS_MESSAGE)
  * Converts the provided data into a Response stream.
  *
  * @param data - The body of the response. This can be any type that is valid for the BodyInit type.
- * @param message - Optional. The status text for the response. Defaults to RESPONSE_SUCCESS_MESSAGE.
+ * @param headers - Optional. The headers to include in the response. Defaults to RESPONSE_STREAM_HEADER.
  * @returns A Response object with the provided data, status, status text, and headers.
  */
-export const toStream = (data: BodyInit, message: string = RESPONSE_SUCCESS_MESSAGE): Response => {
+export const toStream = (data: BodyInit, headers: Headers = RESPONSE_STREAM_HEADER): Response => {
     return new Response(data, {
         status: RESPONSE_SUCCESS_CODE,
-        statusText: message,
-        headers: RESPONSE_STREAM_HEADER
+        headers
     });
 };
 
@@ -58,11 +58,13 @@ export const toStream = (data: BodyInit, message: string = RESPONSE_SUCCESS_MESS
  *
  * @param reason - The error message to be sent to the client. Defaults to `RESPONSE_CLIENT_ERROR_MESSAGE`.
  * @param code - The HTTP status code for the error. Defaults to `RESPONSE_CLIENT_ERROR_CODE`.
+ * @param headers - Optional. The headers to include in the response. Defaults to `RESPONSE_JSON_HEADER`.
  * @returns A `Response` object containing the error message and status code.
  */
 export const toClientError = (
     reason: string = RESPONSE_CLIENT_ERROR_MESSAGE,
-    code: RESPONSE_CODE = RESPONSE_CLIENT_ERROR_CODE
+    code: RESPONSE_CODE = RESPONSE_CLIENT_ERROR_CODE,
+    headers: Headers = RESPONSE_JSON_HEADER
 ): Response => {
     return new Response(
         JSON.stringify({
@@ -72,7 +74,7 @@ export const toClientError = (
         {
             status: code,
             statusText: reason,
-            headers: RESPONSE_JSON_HEADER
+            headers
         }
     );
 };
@@ -84,7 +86,11 @@ export const toClientError = (
  * @param code - The HTTP status code for the "Not Found" error. Defaults to `RESPONSE_NOT_FOUND_CODE`.
  * @returns A `Response` object with the specified status code and reason message.
  */
-export const toNotFound = (reason: string = RESPONSE_NOT_FOUND_MESSAGE, code: RESPONSE_CODE = RESPONSE_NOT_FOUND_CODE): Response => {
+export const toNotFound = (
+    reason: string = RESPONSE_NOT_FOUND_MESSAGE,
+    code: RESPONSE_CODE = RESPONSE_NOT_FOUND_CODE,
+    headers: Headers = RESPONSE_JSON_HEADER
+): Response => {
     return new Response(
         JSON.stringify({
             status: code,
@@ -93,7 +99,7 @@ export const toNotFound = (reason: string = RESPONSE_NOT_FOUND_MESSAGE, code: RE
         {
             status: code,
             statusText: reason,
-            headers: RESPONSE_JSON_HEADER
+            headers
         }
     );
 };
@@ -103,11 +109,13 @@ export const toNotFound = (reason: string = RESPONSE_NOT_FOUND_MESSAGE, code: RE
  *
  * @param reason - The reason for the unauthorized response. Defaults to `RESPONSE_UNAUTHORIZED_MESSAGE`.
  * @param code - The response code. Defaults to `RESPONSE_UNAUTHORIZED_CODE`.
+ * @param headers - Optional. The headers to include in the response. Defaults to `RESPONSE_JSON_HEADER`.
  * @returns A `Response` object with the specified status code and reason.
  */
 export const toUnauthorized = (
     reason: string = RESPONSE_UNAUTHORIZED_MESSAGE,
-    code: RESPONSE_CODE = RESPONSE_UNAUTHORIZED_CODE
+    code: RESPONSE_CODE = RESPONSE_UNAUTHORIZED_CODE,
+    headers: Headers = RESPONSE_JSON_HEADER
 ): Response => {
     return new Response(
         JSON.stringify({
@@ -117,7 +125,7 @@ export const toUnauthorized = (
         {
             status: code,
             statusText: reason,
-            headers: RESPONSE_JSON_HEADER
+            headers
         }
     );
 };
@@ -127,11 +135,13 @@ export const toUnauthorized = (
  *
  * @param reason - The reason message for the timeout. Defaults to `RESPONSE_GATEWAY_TIMEOUT_MESSAGE`.
  * @param code - The status code for the timeout. Defaults to `RESPONSE_GATEWAY_TIMEOUT_CODE`.
+ * @param headers - Optional. The headers to include in the response. Defaults to `RESPONSE_JSON_HEADER`.
  * @returns A Response object with the specified status code and reason message.
  */
 export const toGatewayTimeout = (
     reason: string = RESPONSE_GATEWAY_TIMEOUT_MESSAGE,
-    code: RESPONSE_CODE = RESPONSE_GATEWAY_TIMEOUT_CODE
+    code: RESPONSE_CODE = RESPONSE_GATEWAY_TIMEOUT_CODE,
+    headers: Headers = RESPONSE_JSON_HEADER
 ): Response => {
     return new Response(
         JSON.stringify({
@@ -141,7 +151,7 @@ export const toGatewayTimeout = (
         {
             status: code,
             statusText: reason,
-            headers: RESPONSE_JSON_HEADER
+            headers
         }
     );
 };
@@ -151,11 +161,13 @@ export const toGatewayTimeout = (
  *
  * @param reason - The error message to be included in the response. Defaults to `RESPONSE_SERVER_ERROR_MESSAGE`.
  * @param code - The HTTP status code for the error response. Defaults to `RESPONSE_SERVER_ERROR_CODE`.
+ * @param headers - Optional. The headers to include in the response. Defaults to `RESPONSE_JSON_HEADER`.
  * @returns A `Response` object containing the error details.
  */
 export const toServerError = (
     reason: string = RESPONSE_SERVER_ERROR_MESSAGE,
-    code: RESPONSE_CODE = RESPONSE_SERVER_ERROR_CODE
+    code: RESPONSE_CODE = RESPONSE_SERVER_ERROR_CODE,
+    headers: Headers = RESPONSE_JSON_HEADER
 ): Response => {
     return new Response(
         JSON.stringify({
@@ -165,7 +177,7 @@ export const toServerError = (
         {
             status: code,
             statusText: reason,
-            headers: RESPONSE_JSON_HEADER
+            headers
         }
     );
 };
@@ -175,11 +187,13 @@ export const toServerError = (
  *
  * @param reason - The error message to be included in the response. Defaults to `RESPONSE_SERVER_ERROR_MESSAGE`.
  * @param code - The HTTP status code to be included in the response. Defaults to `RESPONSE_SERVER_ERROR_CODE`.
+ * @param headers - Optional. The headers to include in the response. Defaults to `RESPONSE_JSON_HEADER`.
  * @returns A `Response` object containing the error message and status code.
  */
 export const toUnknownError = (
     reason: string = RESPONSE_SERVER_ERROR_MESSAGE,
-    code: RESPONSE_CODE = RESPONSE_SERVER_ERROR_CODE
+    code: RESPONSE_CODE = RESPONSE_SERVER_ERROR_CODE,
+    headers: Headers = RESPONSE_JSON_HEADER
 ): Response => {
     return new Response(
         JSON.stringify({
@@ -189,7 +203,7 @@ export const toUnknownError = (
         {
             status: code,
             statusText: reason,
-            headers: RESPONSE_JSON_HEADER
+            headers
         }
     );
 };

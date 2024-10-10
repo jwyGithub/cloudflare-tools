@@ -66,28 +66,30 @@ export const RESPONSE_SERVER_ERROR_MESSAGE = 'internal server error';
 /**
  * @description json response header.
  */
-export const RESPONSE_JSON_HEADER = {
+// export const RESPONSE_JSON_HEADER = {
+//     'Content-type': 'application/json'
+// };
+export const RESPONSE_JSON_HEADER = new Headers({
     'Content-type': 'application/json'
-};
+});
 
 /**
  * @description stream response header.
  */
-export const RESPONSE_STREAM_HEADER = {
+export const RESPONSE_STREAM_HEADER = new Headers({
     'Content-type': 'application/octet-stream'
-};
+});
 
 /**
  * @description text response header.
  */
-export const RESPONSE_TEXT_HEADER = {
+export const RESPONSE_TEXT_HEADER = new Headers({
     'Content-type': 'text/plain'
-};
+});
 
 /**
  * @description html response header.
  */
-
-export const RESPONSE_HTML_HEADER = {
+export const RESPONSE_HTML_HEADER = new Headers({
     'Content-type': 'text/html'
-};
+});
