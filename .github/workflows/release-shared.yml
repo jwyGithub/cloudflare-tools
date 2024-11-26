@@ -48,16 +48,19 @@ jobs:
                     echo "type=patch" >> $GITHUB_OUTPUT
                   fi
 
+            - name: Install semver
+              run: npm install -g semver
+
             - name: Bump version
               working-directory: packages/shared
               run: |
                   current_version=$(node -p "require('./package.json').version")
                   if [ "${{ steps.bump.outputs.type }}" = "patch" ]; then
-                    new_version=$(node -p "require('semver').inc('$current_version', 'patch')")
+                    new_version=$(semver -i patch $current_version)
                   elif [ "${{ steps.bump.outputs.type }}" = "minor" ]; then
-                    new_version=$(node -p "require('semver').inc('$current_version', 'minor')")
+                    new_version=$(semver -i minor $current_version)
                   else
-                    new_version=$(node -p "require('semver').inc('$current_version', 'major')")
+                    new_version=$(semver -i major $current_version)
                   fi
                   # Update package.json
                   sed -i "s/\"version\": \"$current_version\"/\"version\": \"$new_version\"/" package.json
