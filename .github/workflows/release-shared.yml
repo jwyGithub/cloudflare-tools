@@ -69,10 +69,6 @@ jobs:
                   git commit -m "chore(shared): bump version to ${new_version}"
                   git tag "shared-v${new_version}"
 
-            - name: Push changes
-              run: |
-                  git push --follow-tags origin main
-
             - name: Build
               run: pnpm run build:shared
 
