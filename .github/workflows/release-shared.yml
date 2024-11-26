@@ -34,9 +34,6 @@ jobs:
                   git config --global user.name "${{ github.actor }}"
                   git config --global user.email "${{ github.actor }}@users.noreply.github.com"
 
-            - name: Change directory
-              run: cd packages/shared
-
             - name: Get version bump
               id: bump
               run: |
@@ -52,16 +49,32 @@ jobs:
                   fi
 
             - name: Bump version
-              run: pnpm standard-version --release-as ${{ steps.bump.outputs.type }}
+              working-directory: packages/shared
+              run: |
+                  current_version=$(node -p "require('./package.json').version")
+                  if [ "${{ steps.bump.outputs.type }}" = "patch" ]; then
+                    new_version=$(node -p "require('semver').inc('$current_version', 'patch')")
+                  elif [ "${{ steps.bump.outputs.type }}" = "minor" ]; then
+                    new_version=$(node -p "require('semver').inc('$current_version', 'minor')")
+                  else
+                    new_version=$(node -p "require('semver').inc('$current_version', 'major')")
+                  fi
+                  # Update package.json
+                  sed -i "s/\"version\": \"$current_version\"/\"version\": \"$new_version\"/" package.json
+                  # Create commit
+                  git add package.json
+                  git commit -m "chore(shared): bump version to ${new_version}"
+                  git tag "shared-v${new_version}"
 
             - name: Push changes
               run: |
                   git push --follow-tags origin main
 
             - name: Build
-              run: pnpm run build
+              run: pnpm run build --filter packages/shared...
 
             - name: Publish to npm
-              run: pnpm publish --no-git-checks
+              working-directory: packages/shared
+              run: pnpm publish --no-git-checks --access public
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH }}
