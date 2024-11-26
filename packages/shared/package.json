@@ -1,7 +1,7 @@
 {
     "name": "@jiangweiye/cloudflare-shared",
     "type": "module",
-    "version": "0.0.7",
+    "version": "0.0.5",
     "description": "cloudflare-shared",
     "author": "jiangweiye <jiangweiye@outlook.com> (https://github.com/jwyGithub)",
     "license": "SEE LICENSE IN LICENSE.md",
@@ -17,12 +17,12 @@
     "exports": {
         ".": {
             "types": "./dist/types/index.d.ts",
-            "import": "./dist/index.js",
-            "require": "./dist/index.umd.cjs"
+            "import": "./dist/cloudflare-shared.js",
+            "require": "./dist/cloudflare-shared.umd.cjs"
         }
     },
-    "main": "./dist/index.umd.cjs",
-    "module": "./dist/index.js",
+    "main": "./dist/cloudflare-shared.umd.cjs",
+    "module": "./dist/cloudflare-shared.js",
     "types": "./dist/types/index.d.ts",
     "files": [
         "dist"
