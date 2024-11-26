@@ -1,3 +1,4 @@
+import type { RESPONSE_CODE } from './src/lib';
 import {
     RESPONSE_CLIENT_ERROR_CODE,
     RESPONSE_CLIENT_ERROR_MESSAGE,
@@ -14,7 +15,6 @@ import {
     RESPONSE_UNAUTHORIZED_CODE,
     RESPONSE_UNAUTHORIZED_MESSAGE
 } from './src/lib';
-import type { RESPONSE_CODE } from './src/lib';
 
 export * from './src/lib';
 
@@ -27,12 +27,12 @@ export * from './src/lib';
  * @returns A `Response` object with a JSON body containing the status, message, and data.
  */
 export const toSuccess = (data: any, message: string = RESPONSE_SUCCESS_MESSAGE, headers: Headers = RESPONSE_JSON_HEADER): Response => {
-    return new Response(
-        JSON.stringify({
+    return Response.json(
+        {
             status: RESPONSE_SUCCESS_CODE,
             message,
             data
-        }),
+        },
         {
             status: RESPONSE_SUCCESS_CODE,
             statusText: message,

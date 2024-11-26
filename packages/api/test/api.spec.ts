@@ -1,53 +1,71 @@
-import { describe, it, expect } from 'vitest';
-import { User, Namespace, BASE_URL, NamespaceMap, UserMap } from '../index';
-import type { IApiContent } from '../index';
+import type { IApiContent } from '../src/index';
+import { describe, expect, it } from 'vitest';
+import * as api from '../src/index';
+import { BASE_URL } from '../src/modules/cloudflare/endpoints/kvnamespace/shared';
+import { NAMESPACE_MODULE_URL } from '../src/modules/cloudflare/endpoints/kvnamespace/namespace';
+import { urlParse } from '../src/modules/cloudflare/utils';
 
 const values: IApiContent = {
     account_id: 'account_id_value',
-    kvnamespace: 'kvnamespace_value',
-    value: 'value_value'
+    kvnamespace: 'test_namespace',
+    value: 'test_value',
+    key_name: 'test_key'
 };
 
-describe('API', () => {
-    it('verify token', async () => {
-        const url = User.VERIFY_TOKEN();
-        expect(url).toBe(BASE_URL + User.MODULE_URL + '/tokens/verify');
+describe('router', () => {
+    it('create namespace', async () => {
+        const [router, request] = api.CREATE_NAMESPACE as api.ApiMap;
+        const cloudflare_url = request(values);
+
+        expect(router).toBe(`/api/namespace/${request.name}`);
+        expect(cloudflare_url).toBe(`${BASE_URL}${urlParse(NAMESPACE_MODULE_URL, values)}`);
+    });
+
+    it('remove namespace', async () => {
+        const [router, request] = api.REMOVE_NAMESPACE as api.ApiMap;
+        const cloudflare_url = request(values);
+
+        expect(router).toBe(`/api/namespace/${request.name}`);
+        expect(cloudflare_url).toBe(`${BASE_URL}${urlParse(`${NAMESPACE_MODULE_URL}/{{kvnamespace}}`, values)}`);
     });
 
     it('get all namespace', async () => {
-        const url = Namespace.GET_ALL(values);
-        expect(url).toBe(BASE_URL + '/accounts/account_id_value/storage/kv/namespaces');
+        const [router, request] = api.GET_ALL_NAMESPACE as api.ApiMap;
+        const cloudflare_url = request(values);
+
+        expect(router).toBe(`/api/namespace/${request.name}`);
+        expect(cloudflare_url).toBe(`${BASE_URL}${urlParse(NAMESPACE_MODULE_URL, values)}`);
     });
 
     it('get namespace keys', async () => {
-        const url = Namespace.GET_KEYS(values);
-        expect(url).toBe(BASE_URL + '/accounts/account_id_value/storage/kv/namespaces/kvnamespace_value/keys');
+        const [router, request] = api.GET_NAMESPACE_KEYS as api.ApiMap;
+        const cloudflare_url = request(values);
+
+        expect(router).toBe(`/api/namespace/${request.name}`);
+        expect(cloudflare_url).toBe(`${BASE_URL}${urlParse(`${NAMESPACE_MODULE_URL}/{{kvnamespace}}/keys`, values)}`);
     });
 
     it('get namespace value', async () => {
-        const url = Namespace.GET_VALUE(values);
-        expect(url).toBe(BASE_URL + '/accounts/account_id_value/storage/kv/namespaces/kvnamespace_value/values/value_value');
-    });
-});
+        const [router, request] = api.GET_NAMESPACE_VALUE as api.ApiMap;
+        const cloudflare_url = request(values);
 
-describe('url map', () => {
-    it('verify token', async () => {
-        const cloudflare_url = UserMap.find('VERIFY_TOKEN');
-        expect(cloudflare_url).toBe(BASE_URL + `/user/tokens/verify`);
+        expect(router).toBe(`/api/namespace/${request.name}`);
+        expect(cloudflare_url).toBe(`${BASE_URL}${urlParse(`${NAMESPACE_MODULE_URL}/{{kvnamespace}}/values/{{value}}`, values)}`);
     });
 
-    it('get GET_ALL url', async () => {
-        const cloudflare_url = NamespaceMap.find('GET_ALL', values);
-        expect(cloudflare_url).toBe(BASE_URL + `/accounts/account_id_value/storage/kv/namespaces`);
+    it('create namespace value', async () => {
+        const [router, request] = api.CREATE_NAMESPACE_VALUE as api.ApiMap;
+        const cloudflare_url = request(values);
+
+        expect(router).toBe(`/api/namespace/${request.name}`);
+        expect(cloudflare_url).toBe(`${BASE_URL}${urlParse(`${NAMESPACE_MODULE_URL}/{{kvnamespace}}/values/{key_name}`, values)}`);
     });
 
-    it('get GET_KEYS url', async () => {
-        const cloudflare_url = NamespaceMap.find('GET_KEYS', values);
-        expect(cloudflare_url).toBe(BASE_URL + `/accounts/account_id_value/storage/kv/namespaces/kvnamespace_value/keys`);
-    });
+    it('remove namespace value', async () => {
+        const [router, request] = api.REMOVE_NAMESPACE_VALUE as api.ApiMap;
+        const cloudflare_url = request(values);
 
-    it('get GET_VALUE url', async () => {
-        const cloudflare_url = NamespaceMap.find('GET_VALUE', values);
-        expect(cloudflare_url).toBe(BASE_URL + `/accounts/account_id_value/storage/kv/namespaces/kvnamespace_value/values/value_value`);
+        expect(router).toBe(`/api/namespace/${request.name}`);
+        expect(cloudflare_url).toBe(`${BASE_URL}${urlParse(`${NAMESPACE_MODULE_URL}/{{kvnamespace}}/values/{{value}}`, values)}`);
     });
 });

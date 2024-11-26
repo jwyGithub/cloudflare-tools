@@ -1,0 +1,75 @@
+name: Release Workflow
+
+on:
+    push:
+        branches:
+            - main
+        paths-ignore:
+            - README.md
+            - packages/**/*.md
+            - LICENSE
+
+jobs:
+    determine_release_type:
+        runs-on: ubuntu-latest
+        outputs:
+            release_type: ${{ steps.set_release_type.outputs.type }}
+        steps:
+            - name: Determine release type
+              id: set_release_type
+              run: |
+                  commit_message="${{ github.event.head_commit.message }}"
+                  if [[ "$commit_message" =~ ^api: ]]; then
+                      echo "type=api" >> $GITHUB_OUTPUT
+                  elif [[ "$commit_message" =~ ^fetch: ]]; then
+                      echo "type=fetch" >> $GITHUB_OUTPUT
+                  elif [[ "$commit_message" =~ ^service: ]]; then
+                      echo "type=service" >> $GITHUB_OUTPUT
+                  elif [[ "$commit_message" =~ ^shared: ]]; then
+                      echo "type=shared" >> $GITHUB_OUTPUT
+                  elif [[ "$commit_message" =~ ^feat: ]]; then
+                      echo "type=feat" >> $GITHUB_OUTPUT
+                  else
+                      echo "type=unknown" >> $GITHUB_OUTPUT
+                  fi
+
+            - name: Print release type
+              run: |
+                  echo "Release type: ${{ steps.set_release_type.outputs.type }}"
+
+    run_api_release:
+        needs: determine_release_type
+        if: needs.determine_release_type.outputs.release_type == 'api' || needs.determine_release_type.outputs.release_type == 'feat'
+        uses: ./.github/workflows/release-api.yml
+        secrets:
+            NPM_PUBLISH: ${{ secrets.NPM_PUBLISH }}
+
+    run_fetch_release:
+        needs: determine_release_type
+        if: needs.determine_release_type.outputs.release_type == 'fetch' || needs.determine_release_type.outputs.release_type == 'feat'
+        uses: ./.github/workflows/release-fetch.yml
+        secrets:
+            NPM_PUBLISH: ${{ secrets.NPM_PUBLISH }}
+
+    run_service_release:
+        needs: determine_release_type
+        if: needs.determine_release_type.outputs.release_type == 'service' || needs.determine_release_type.outputs.release_type == 'feat'
+        uses: ./.github/workflows/release-service.yml
+        secrets:
+            NPM_PUBLISH: ${{ secrets.NPM_PUBLISH }}
+
+    run_shared_release:
+        needs: determine_release_type
+        if: needs.determine_release_type.outputs.release_type == 'shared' || needs.determine_release_type.outputs.release_type == 'feat'
+        uses: ./.github/workflows/release-shared.yml
+        secrets:
+            NPM_PUBLISH: ${{ secrets.NPM_PUBLISH }}
+
+    unknown_release_type:
+        needs: determine_release_type
+        if: needs.determine_release_type.outputs.release_type == 'unknown'
+        runs-on: ubuntu-latest
+        steps:
+            - run: |
+                  echo "Unknown release type. No action taken."
+                  exit 1
