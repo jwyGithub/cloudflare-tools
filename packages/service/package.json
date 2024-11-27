@@ -17,18 +17,17 @@
     "exports": {
         ".": {
             "types": "./dist/types/index.d.ts",
-            "import": "./dist/index.js",
-            "require": "./dist/index.umd.cjs"
+            "import": "./dist/cloudflare-service.js",
+            "require": "./dist/cloudflare-service.umd.cjs"
         }
     },
-    "main": "./dist/index.umd.cjs",
-    "module": "./dist/index.js",
+    "main": "./dist/cloudflare-service.umd.cjs",
+    "module": "./dist/cloudflare-service.js",
     "types": "./dist/types/index.d.ts",
     "files": [
         "dist"
     ],
     "scripts": {
-        "build": "vite build",
-        "release": "vite build && npm publish --access public"
+        "build": "vite build"
     }
 }

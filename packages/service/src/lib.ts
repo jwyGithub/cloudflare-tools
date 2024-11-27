@@ -1,6 +1,14 @@
-export type RESPONSE_TYPE = 'success' | 'error' | 'not_found' | 'unauthorized' | 'bad_request' | 'gateway_timeout' | 'unknown_error';
+export type RESPONSE_TYPE =
+    | 'success'
+    | 'error'
+    | 'not_found'
+    | 'unauthorized'
+    | 'bad_request'
+    | 'gateway_timeout'
+    | 'unknown_error'
+    | (string & {});
 
-export type RESPONSE_CODE = 200 | 400 | 404 | 401 | 504 | 500;
+export type RESPONSE_CODE = 200 | 400 | 404 | 401 | 504 | 500 | (number & {});
 
 /**
  * @description success response code.
