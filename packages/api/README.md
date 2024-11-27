@@ -23,7 +23,7 @@ npm install @jiangweiye/cloudflare-api
 ## type
 
 ```typescript
-export declare const BASE_URL = "https://api.cloudflare.com/client/v4";
+export declare const BASE_URL = 'https://api.cloudflare.com/client/v4';
 export declare class CloudflareAPI {
     private static match_reg;
     protected static format(url: string, values: IApiContent): string;

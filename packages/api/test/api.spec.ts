@@ -1,8 +1,8 @@
 import type { IApiContent } from '../src/index';
 import { describe, expect, it } from 'vitest';
 import * as api from '../src/index';
-import { BASE_URL } from '../src/modules/cloudflare/endpoints/kvnamespace/shared';
 import { NAMESPACE_MODULE_URL } from '../src/modules/cloudflare/endpoints/kvnamespace/namespace';
+import { BASE_URL } from '../src/modules/cloudflare/endpoints/kvnamespace/shared';
 import { urlParse } from '../src/modules/cloudflare/utils';
 
 const values: IApiContent = {
