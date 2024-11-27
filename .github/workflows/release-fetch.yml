@@ -34,9 +34,6 @@ jobs:
                   git config --global user.name "${{ github.actor }}"
                   git config --global user.email "${{ github.actor }}@users.noreply.github.com"
 
-            - name: Change directory
-              run: cd packages/fetch
-
             - name: Get version bump
               id: bump
               run: |
@@ -51,17 +48,32 @@ jobs:
                     echo "type=patch" >> $GITHUB_OUTPUT
                   fi
 
-            - name: Bump version
-              run: pnpm standard-version --release-as ${{ steps.bump.outputs.type }}
+            - name: Install semver
+              run: npm install -g semver
 
-            - name: Push changes
+            - name: Bump version
+              working-directory: packages/fetch
               run: |
-                  git push --follow-tags origin main
+                  current_version=$(node -p "require('./package.json').version")
+                  if [ "${{ steps.bump.outputs.type }}" = "patch" ]; then
+                    new_version=$(semver -i patch $current_version)
+                  elif [ "${{ steps.bump.outputs.type }}" = "minor" ]; then
+                    new_version=$(semver -i minor $current_version)
+                  else
+                    new_version=$(semver -i major $current_version)
+                  fi
+                  # Update package.json
+                  sed -i "s/\"version\": \"$current_version\"/\"version\": \"$new_version\"/" package.json
+                  # Create commit
+                  git add package.json
+                  git commit -m "chore(fetch): bump version to ${new_version}"
+                  git tag "fetch-v${new_version}"
 
             - name: Build
-              run: pnpm run build
+              run: pnpm run build:fetch
 
             - name: Publish to npm
-              run: pnpm publish --no-git-checks
+              working-directory: packages/fetch
+              run: pnpm publish --no-git-checks --access public
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH }}
