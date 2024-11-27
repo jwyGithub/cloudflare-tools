@@ -5,7 +5,7 @@ import dts from 'vite-plugin-dts';
 export default defineConfig({
     build: {
         lib: {
-            entry: [resolve(__dirname, './index.ts')],
+            entry: resolve(__dirname, './index.ts'),
             name: 'CloudflareFetch'
         },
         target: ['es2022'],
