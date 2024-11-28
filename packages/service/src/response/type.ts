@@ -64,7 +64,8 @@ export const toStream = (data: BodyInit | null, headers: Headers = RESPONSE_STRE
  */
 export const toStatic = (data: BodyInit | null, headers: Headers = RESPONSE_TEXT_HEADER): Response => {
     return new Response(data, {
-        headers
+        headers,
+        status: RESPONSE_SUCCESS_CODE
     });
 };
 
