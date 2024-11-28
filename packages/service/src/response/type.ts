@@ -4,6 +4,7 @@ import {
     RESPONSE_CLIENT_ERROR_MESSAGE,
     RESPONSE_GATEWAY_TIMEOUT_CODE,
     RESPONSE_GATEWAY_TIMEOUT_MESSAGE,
+    RESPONSE_HTML_HEADER,
     RESPONSE_JSON_HEADER,
     RESPONSE_NOT_FOUND_CODE,
     RESPONSE_NOT_FOUND_MESSAGE,
@@ -12,6 +13,7 @@ import {
     RESPONSE_STREAM_HEADER,
     RESPONSE_SUCCESS_CODE,
     RESPONSE_SUCCESS_MESSAGE,
+    RESPONSE_TEXT_HEADER,
     RESPONSE_UNAUTHORIZED_CODE,
     RESPONSE_UNAUTHORIZED_MESSAGE
 } from '../lib';
@@ -46,9 +48,35 @@ export const toSuccess = (data: any, message: string = RESPONSE_SUCCESS_MESSAGE,
  * @param headers - 可选。要包含在响应中的头信息。默认为 `RESPONSE_STREAM_HEADER`。
  * @returns 一个包含提供的数据、状态、状态文本和头信息的 `Response` 对象。
  */
-export const toStream = (data: BodyInit, headers: Headers = RESPONSE_STREAM_HEADER): Response => {
+export const toStream = (data: BodyInit | null, headers: Headers = RESPONSE_STREAM_HEADER): Response => {
     return new Response(data, {
         status: RESPONSE_SUCCESS_CODE,
+        headers
+    });
+};
+
+/**
+ * 发送静态资源
+ *
+ * @param data - 响应的主体。可以是任何有效的 BodyInit 类型。
+ * @param headers - 可选。要包含在响应中的头信息。默认为 `RESPONSE_STREAM_HEADER`。
+ * @returns 一个包含提供的数据、状态、状态文本和头信息的 `Response` 对象。
+ */
+export const toStatic = (data: BodyInit | null, headers: Headers = RESPONSE_TEXT_HEADER): Response => {
+    return new Response(data, {
+        headers
+    });
+};
+
+/**
+ * 发送页面
+ *
+ * @param data - 响应的主体。可以是任何有效的 BodyInit 类型。
+ * @param headers - 可选。要包含在响应中的头信息。默认为 `RESPONSE_STREAM_HEADER`。
+ * @returns 一个包含提供的数据、状态、状态文本和头信息的 `Response` 对象。
+ */
+export const toHTML = (data: BodyInit | null, headers: Headers = RESPONSE_HTML_HEADER): Response => {
+    return new Response(data, {
         headers
     });
 };
