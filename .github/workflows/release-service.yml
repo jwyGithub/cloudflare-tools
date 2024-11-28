@@ -69,6 +69,7 @@ jobs:
                   git commit -m "chore(service): bump version to ${new_version}"
                   git tag "service-v${new_version}"
                   # Push changes and tags
+                  git pull
                   git push origin HEAD:main
                   git push origin "service-v${new_version}"
 
