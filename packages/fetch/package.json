@@ -1,7 +1,7 @@
 {
     "name": "@jiangweiye/cloudflare-fetch",
     "type": "module",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "description": "cloudflare-service-fetch",
     "author": "jiangweiye <jiangweiye@outlook.com> (https://github.com/jwyGithub)",
     "license": "SEE LICENSE IN LICENSE.md",
