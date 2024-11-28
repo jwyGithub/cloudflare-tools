@@ -68,6 +68,9 @@ jobs:
                   git add package.json
                   git commit -m "chore(fetch): bump version to ${new_version}"
                   git tag "fetch-v${new_version}"
+                  # Push changes and tags
+                  git push origin HEAD:main
+                  git push origin "fetch-v${new_version}"
 
             - name: Build
               run: pnpm run build:fetch

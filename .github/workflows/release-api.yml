@@ -68,6 +68,9 @@ jobs:
                   git add package.json
                   git commit -m "chore(api): bump version to ${new_version}"
                   git tag "api-v${new_version}"
+                  # Push changes and tags
+                  git push origin HEAD:main
+                  git push origin "api-v${new_version}"
 
             - name: Build
               run: pnpm run build:api
