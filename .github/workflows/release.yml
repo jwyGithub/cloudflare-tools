@@ -29,19 +29,21 @@ jobs:
                   COMMIT_MSG=$(git log -1 --pretty=%B)
                   if [[ $COMMIT_MSG =~ ^feat:|^fix:|^chore: ]]; then
                     echo "package=all" >> $GITHUB_OUTPUT
-                  elif [[ $COMMIT_MSG =~ ^$$([^]]+)$$ ]]; then
-                    echo "package=${BASH_REMATCH[1]}" >> $GITHUB_OUTPUT
+                  elif [[ $COMMIT_MSG =~ ^$$([^]]+)$$|^([^-]+)- ]]; then
+                    # 支持 [api]-feat 和 api-feat 两种格式
+                    PACKAGE="${BASH_REMATCH[1]}${BASH_REMATCH[2]}"
+                    echo "package=${PACKAGE}" >> $GITHUB_OUTPUT
                   fi
 
             - name: Get commit type
               id: get-type
               run: |
                   COMMIT_MSG=$(git log -1 --pretty=%B)
-                  if [[ $COMMIT_MSG =~ ^feat:|^$$.*$$-feat: ]]; then
+                  if [[ $COMMIT_MSG =~ ^feat:|^$$.*$$-feat:|^.*-feat: ]]; then
                     echo "type=feat" >> $GITHUB_OUTPUT
-                  elif [[ $COMMIT_MSG =~ ^fix:|^$$.*$$-fix: ]]; then
+                  elif [[ $COMMIT_MSG =~ ^fix:|^$$.*$$-fix:|^.*-fix: ]]; then
                     echo "type=fix" >> $GITHUB_OUTPUT
-                  elif [[ $COMMIT_MSG =~ ^chore:|^$$.*$$-chore: ]]; then
+                  elif [[ $COMMIT_MSG =~ ^chore:|^$$.*$$-chore:|^.*-chore: ]]; then
                     echo "type=chore" >> $GITHUB_OUTPUT
                   else
                     echo "type=fix" >> $GITHUB_OUTPUT
@@ -92,21 +94,21 @@ jobs:
                   PACKAGE=${{ needs.analyze-commit.outputs.package }}
                   VERSION_TYPE=${{ needs.analyze-commit.outputs.version_type }}
 
+                  # 更新版本号
                   cd packages/$PACKAGE
-
-                  # Update version
                   pnpm version $VERSION_TYPE --no-git-tag-version
+                  cd ../..
 
-                  # Commit changes
+                  # 提交所有更改（包括根目录的 package.json）
                   git add .
                   git commit -m "chore(release): update $PACKAGE package version [skip ci]"
                   git push origin main
 
-                  # Build
-                  pnpm run build
+                  # 构建
+                  pnpm run build:$PACKAGE
 
-                  # Publish
-                  pnpm publish --no-git-checks
+                  # 发布
+                  pnpm --filter @scope/$PACKAGE publish --no-git-checks
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH }}
 
