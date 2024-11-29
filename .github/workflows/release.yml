@@ -18,6 +18,11 @@ jobs:
             type: ${{ steps.get-type.outputs.type }}
             version_type: ${{ steps.get-version-type.outputs.version_type }}
         steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
             - name: Get package and type from commit
               id: get-package
               run: |
@@ -53,7 +58,7 @@ jobs:
                     echo "version_type=major" >> $GITHUB_OUTPUT
                   fi
 
-    trigger-releases:
+    release-package:
         needs: analyze-commit
         runs-on: ubuntu-latest
         steps:
@@ -81,14 +86,31 @@ jobs:
                   git config --global user.name 'GitHub Actions Bot'
                   git config --global user.email 'actions@github.com'
 
-            - name: Trigger specific package release
+            - name: Release specific package
               if: needs.analyze-commit.outputs.package != 'all'
-              uses: ./.github/workflows/release-${{ needs.analyze-commit.outputs.package }}.yml
-              with:
-                  VERSION_TYPE: ${{ needs.analyze-commit.outputs.version_type }}
-                  NPM_PUBLISH: ${{ secrets.NPM_PUBLISH }}
+              run: |
+                  PACKAGE=${{ needs.analyze-commit.outputs.package }}
+                  VERSION_TYPE=${{ needs.analyze-commit.outputs.version_type }}
 
-            - name: Trigger all packages release
+                  cd packages/$PACKAGE
+
+                  # Update version
+                  pnpm version $VERSION_TYPE --no-git-tag-version
+
+                  # Commit changes
+                  git add .
+                  git commit -m "chore(release): update $PACKAGE package version [skip ci]"
+                  git push origin main
+
+                  # Build
+                  pnpm run build
+
+                  # Publish
+                  pnpm publish --no-git-checks
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH }}
+
+            - name: Release all packages
               if: needs.analyze-commit.outputs.package == 'all'
               run: |
                   # 创建临时分支来处理所有更新
