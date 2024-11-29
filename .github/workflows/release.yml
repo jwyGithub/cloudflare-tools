@@ -1,4 +1,4 @@
-name: Release Workflow
+name: Release Packages
 
 on:
     push:
@@ -6,70 +6,119 @@ on:
             - main
         paths-ignore:
             - README.md
-            - packages/**/*.md
+            - '**/*.md'
             - LICENSE
 
 jobs:
-    determine_release_type:
+    analyze-commit:
+        if: "!contains(github.event.head_commit.message, '[skip ci]')"
         runs-on: ubuntu-latest
         outputs:
-            release_type: ${{ steps.set_release_type.outputs.type }}
+            package: ${{ steps.get-package.outputs.package }}
+            type: ${{ steps.get-type.outputs.type }}
+            version_type: ${{ steps.get-version-type.outputs.version_type }}
         steps:
-            - name: Determine release type
-              id: set_release_type
+            - name: Get package and type from commit
+              id: get-package
               run: |
-                  commit_message="${{ github.event.head_commit.message }}"
-                  if [[ "$commit_message" =~ ^api: ]]; then
-                      echo "type=api" >> $GITHUB_OUTPUT
-                  elif [[ "$commit_message" =~ ^fetch: ]]; then
-                      echo "type=fetch" >> $GITHUB_OUTPUT
-                  elif [[ "$commit_message" =~ ^service: ]]; then
-                      echo "type=service" >> $GITHUB_OUTPUT
-                  elif [[ "$commit_message" =~ ^shared: ]]; then
-                      echo "type=shared" >> $GITHUB_OUTPUT
-                  elif [[ "$commit_message" =~ ^feat: ]]; then
-                      echo "type=feat" >> $GITHUB_OUTPUT
-                  else
-                      echo "type=unknown" >> $GITHUB_OUTPUT
+                  COMMIT_MSG=$(git log -1 --pretty=%B)
+                  if [[ $COMMIT_MSG =~ ^feat:|^fix:|^chore: ]]; then
+                    echo "package=all" >> $GITHUB_OUTPUT
+                  elif [[ $COMMIT_MSG =~ ^$$([^]]+)$$ ]]; then
+                    echo "package=${BASH_REMATCH[1]}" >> $GITHUB_OUTPUT
                   fi
 
-            - name: Print release type
+            - name: Get commit type
+              id: get-type
               run: |
-                  echo "Release type: ${{ steps.set_release_type.outputs.type }}"
+                  COMMIT_MSG=$(git log -1 --pretty=%B)
+                  if [[ $COMMIT_MSG =~ ^feat:|^$$.*$$-feat: ]]; then
+                    echo "type=feat" >> $GITHUB_OUTPUT
+                  elif [[ $COMMIT_MSG =~ ^fix:|^$$.*$$-fix: ]]; then
+                    echo "type=fix" >> $GITHUB_OUTPUT
+                  elif [[ $COMMIT_MSG =~ ^chore:|^$$.*$$-chore: ]]; then
+                    echo "type=chore" >> $GITHUB_OUTPUT
+                  else
+                    echo "type=fix" >> $GITHUB_OUTPUT
+                  fi
 
-    run_api_release:
-        needs: determine_release_type
-        if: needs.determine_release_type.outputs.release_type == 'api' || needs.determine_release_type.outputs.release_type == 'feat'
-        uses: ./.github/workflows/release-api.yml
-        secrets:
-            NPM_PUBLISH: ${{ secrets.NPM_PUBLISH }}
+            - name: Determine version type
+              id: get-version-type
+              run: |
+                  if [[ "${{ steps.get-type.outputs.type }}" == "feat" ]]; then
+                    echo "version_type=minor" >> $GITHUB_OUTPUT
+                  elif [[ "${{ steps.get-type.outputs.type }}" == "fix" ]]; then
+                    echo "version_type=patch" >> $GITHUB_OUTPUT
+                  elif [[ "${{ steps.get-type.outputs.type }}" == "chore" ]]; then
+                    echo "version_type=major" >> $GITHUB_OUTPUT
+                  fi
 
-    run_fetch_release:
-        needs: determine_release_type
-        if: needs.determine_release_type.outputs.release_type == 'fetch' || needs.determine_release_type.outputs.release_type == 'feat'
-        uses: ./.github/workflows/release-fetch.yml
-        secrets:
-            NPM_PUBLISH: ${{ secrets.NPM_PUBLISH }}
-
-    run_service_release:
-        needs: determine_release_type
-        if: needs.determine_release_type.outputs.release_type == 'service' || needs.determine_release_type.outputs.release_type == 'feat'
-        uses: ./.github/workflows/release-service.yml
-        secrets:
-            NPM_PUBLISH: ${{ secrets.NPM_PUBLISH }}
-
-    run_shared_release:
-        needs: determine_release_type
-        if: needs.determine_release_type.outputs.release_type == 'shared' || needs.determine_release_type.outputs.release_type == 'feat'
-        uses: ./.github/workflows/release-shared.yml
-        secrets:
-            NPM_PUBLISH: ${{ secrets.NPM_PUBLISH }}
-
-    unknown_release_type:
-        needs: determine_release_type
-        if: needs.determine_release_type.outputs.release_type == 'unknown'
+    trigger-releases:
+        needs: analyze-commit
         runs-on: ubuntu-latest
         steps:
-            - run: |
-                  echo "Unknown release type. No action taken."
-                  exit 1
+            - name: Checkout repository
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: latest
+                  registry-url: 'https://registry.npmjs.org'
+
+            - name: Install pnpm
+              uses: pnpm/action-setup@v4
+              with:
+                  version: latest
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Configure Git
+              run: |
+                  git config --global user.name 'GitHub Actions Bot'
+                  git config --global user.email 'actions@github.com'
+
+            - name: Trigger specific package release
+              if: needs.analyze-commit.outputs.package != 'all'
+              uses: ./.github/workflows/release-${{ needs.analyze-commit.outputs.package }}.yml
+              with:
+                  VERSION_TYPE: ${{ needs.analyze-commit.outputs.version_type }}
+                  NPM_PUBLISH: ${{ secrets.NPM_PUBLISH }}
+
+            - name: Trigger all packages release
+              if: needs.analyze-commit.outputs.package == 'all'
+              run: |
+                  # 创建临时分支来处理所有更新
+                  git checkout -b temp-release-branch
+
+                  # 更新所有包的版本
+                  for package in api fetch service shared; do
+                    cd packages/$package
+                    pnpm version ${{ needs.analyze-commit.outputs.version_type }} --no-git-tag-version
+                    cd ../..
+                  done
+
+                  # 提交更改
+                  git add .
+                  git commit -m "chore(release): update all packages versions [skip ci]"
+
+                  # 获取最新的更改并rebase
+                  git fetch origin main
+                  git rebase origin/main
+
+                  # 推送更改
+                  git push origin temp-release-branch:main
+
+                  # 构建所有包
+                  pnpm run build:api
+                  pnpm run build:fetch
+                  pnpm run build:service
+                  pnpm run build:shared
+
+                  # 发布所有包
+                  pnpm -r publish --no-git-checks
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH }}

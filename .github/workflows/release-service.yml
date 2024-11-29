@@ -1,27 +1,31 @@
-name: service release
+name: Release service Package
 
 on:
     workflow_call:
-        secrets:
+        inputs:
+            VERSION_TYPE:
+                required: true
+                type: string
             NPM_PUBLISH:
                 required: true
+                type: string
 
 jobs:
-    build-and-publish:
+    release:
         runs-on: ubuntu-latest
         steps:
-            - name: Checkout
+            - name: Checkout repository
               uses: actions/checkout@v4
               with:
                   fetch-depth: 0
 
-            - name: Set up Node.js
+            - name: Setup Node.js
               uses: actions/setup-node@v4
               with:
                   node-version: latest
                   registry-url: 'https://registry.npmjs.org'
 
-            - name: Install pnpm
+            - name: Setup pnpm
               uses: pnpm/action-setup@v4
               with:
                   version: latest
@@ -29,54 +33,22 @@ jobs:
             - name: Install dependencies
               run: pnpm install --frozen-lockfile
 
-            - name: Configure git
+            - name: Update version
+              working-directory: ./packages/service
               run: |
-                  git config --global user.name "${{ github.actor }}"
-                  git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+                  git pull origin main
+                  pnpm version ${{ inputs.version_type }} --no-git-tag-version
 
-            - name: Get version bump
-              id: bump
+            - name: Commit changes
               run: |
-                  LAST_COMMIT_MSG=$(git log -1 --pretty=%B)
-                  if [[ $LAST_COMMIT_MSG == service:fix:* ]]; then
-                    echo "type=patch" >> $GITHUB_OUTPUT
-                  elif [[ $LAST_COMMIT_MSG == service:feat:* ]]; then
-                    echo "type=minor" >> $GITHUB_OUTPUT
-                  elif [[ $LAST_COMMIT_MSG == service:chore:* ]]; then
-                    echo "type=major" >> $GITHUB_OUTPUT
-                  else
-                    echo "type=patch" >> $GITHUB_OUTPUT
-                  fi
+                  git add .
+                  git commit -m "chore(release): update service package version [skip ci]"
+                  git push origin main
 
-            - name: Install semver
-              run: npm install -g semver
-
-            - name: Bump version
-              working-directory: packages/service
-              run: |
-                  current_version=$(node -p "require('./package.json').version")
-                  if [ "${{ steps.bump.outputs.type }}" = "patch" ]; then
-                    new_version=$(semver -i patch $current_version)
-                  elif [ "${{ steps.bump.outputs.type }}" = "minor" ]; then
-                    new_version=$(semver -i minor $current_version)
-                  else
-                    new_version=$(semver -i major $current_version)
-                  fi
-                  # Update package.json
-                  sed -i "s/\"version\": \"$current_version\"/\"version\": \"$new_version\"/" package.json
-                  # Create commit
-                  git add package.json
-                  git commit -m "chore(service): bump version to ${new_version}"
-                  git tag -a "cloudflare-service@$new_version" -m "cloudflare-service@$new_version"
-                  # Push changes and tags
-                  git pull
-                  git push origin HEAD:main
-
-            - name: Build
+            - name: Build package
               run: pnpm run build:service
 
-            - name: Publish to npm
-              working-directory: packages/service
-              run: pnpm publish --no-git-checks --access public
+            - name: Publish package
+              run: pnpm --filter @jiangweiye/cloudflare-service publish --no-git-checks
               env:
-                  NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH }}
+                  NODE_AUTH_TOKEN: ${{ inputs.NPM_PUBLISH }}

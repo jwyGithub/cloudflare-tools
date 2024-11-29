@@ -28,7 +28,6 @@
         "dist"
     ],
     "scripts": {
-        "build": "vite build",
-        "test": "vitest"
+        "build": "vite build"
     }
 }
