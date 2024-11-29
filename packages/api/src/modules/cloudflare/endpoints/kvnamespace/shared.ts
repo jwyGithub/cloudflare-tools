@@ -11,5 +11,5 @@ export const MATCH_REG = /\{\{(.*?)\}\}/g;
  * @returns {string} 返回格式化后的URL
  */
 export function urlParse(url: string, values: IApiContent): string {
-    return url.replace(MATCH_REG, (_, key) => values[key] ?? `{{${key}}}`);
+    return url.replace(MATCH_REG, (_: string, key) => values[key] ?? `{{${key}}}`);
 }
