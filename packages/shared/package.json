@@ -1,7 +1,7 @@
 {
     "name": "@jiangweiye/worker-shared",
     "type": "module",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "cloudflare-shared",
     "author": "jiangweiye <jiangweiye@outlook.com> (https://github.com/jwyGithub)",
     "license": "SEE LICENSE IN LICENSE.md",
