@@ -6,7 +6,7 @@ export default defineConfig({
     build: {
         lib: {
             entry: [resolve(__dirname, './src/index.ts')],
-            name: 'CloudflareApi'
+            name: 'WorkerApi'
         },
         target: ['es2022'],
         minify: true,

@@ -5,8 +5,8 @@ import dts from 'vite-plugin-dts';
 export default defineConfig({
     build: {
         lib: {
-            entry: resolve(__dirname, './index.ts'),
-            name: 'CloudflareService'
+            entry: [resolve(__dirname, './index.ts')],
+            name: 'WorkerService'
         },
         target: ['es2022'],
         minify: true,

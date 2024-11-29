@@ -18,12 +18,12 @@
     "exports": {
         ".": {
             "types": "./dist/types/index.d.ts",
-            "import": "./dist/cloudflare-fetch.js",
-            "require": "./dist/cloudflare-fetch.umd.cjs"
+            "import": "./dist/index.js",
+            "require": "./dist/index.umd.cjs"
         }
     },
-    "main": "./dist/cloudflare-fetch.umd.cjs",
-    "module": "./dist/cloudflare-fetch.js",
+    "main": "./dist/index.umd.cjs",
+    "module": "./dist/index.js",
     "types": "./dist/types/index.d.ts",
     "files": [
         "dist"

@@ -17,12 +17,12 @@
     "exports": {
         ".": {
             "types": "./dist/types/index.d.ts",
-            "import": "./dist/cloudflare-service.js",
-            "require": "./dist/cloudflare-service.umd.cjs"
+            "import": "./dist/index.js",
+            "require": "./dist/index.umd.cjs"
         }
     },
-    "main": "./dist/cloudflare-service.umd.cjs",
-    "module": "./dist/cloudflare-service.js",
+    "main": "./dist/index.umd.cjs",
+    "module": "./dist/index.js",
     "types": "./dist/types/index.d.ts",
     "files": [
         "dist"
