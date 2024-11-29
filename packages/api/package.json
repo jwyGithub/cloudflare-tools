@@ -1,7 +1,7 @@
 {
-    "name": "@jiangweiye/cloudflare-api",
+    "name": "@jiangweiye/worker-api",
     "type": "module",
-    "version": "0.0.1",
+    "version": "0.0.0",
     "description": "cloudflare-service-api",
     "author": "jiangweiye <jiangweiye@outlook.com> (https://github.com/jwyGithub)",
     "license": "SEE LICENSE IN LICENSE.md",

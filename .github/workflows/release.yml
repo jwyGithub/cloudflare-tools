@@ -108,7 +108,7 @@ jobs:
                   pnpm run build:$PACKAGE
 
                   # 发布
-                  pnpm --filter @jiangweiye/cloudflare-$PACKAGE publish --no-git-checks
+                  pnpm --filter @jiangweiye/worker-$PACKAGE publish --no-git-checks
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH }}
 
