@@ -1,10 +1,16 @@
+export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+
 export interface FetchRequestConfig {
     url: string;
-    method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
-    headers?: Headers;
+    method?: HttpMethod;
+    headers?: Record<string, string>;
+    body?: any;
     params?: Record<string, any>;
-    body?: string | FormData | Record<string, any>;
-    responseType?: 'json' | 'text' | 'blob';
+    timeout?: number;
+    signal?: AbortSignal; // 添加 signal 属性
+    retries?: number;
+    retryDelay?: number;
+    retryOnStatusCodes?: number[];
 }
 
 export interface FetchResponse<T = any> {
@@ -13,8 +19,21 @@ export interface FetchResponse<T = any> {
     statusText: string;
     headers: Headers;
     config: FetchRequestConfig;
-    request: Response;
 }
 
-export type FetchInterceptor<T> = (value: T) => T | Promise<T>;
-export type FetchErrorInterceptor = (error: any) => any;
+export type FetchInterceptor<T> = (configOrResponse: T) => T | Promise<T>;
+
+// 为重试和超时功能定义专门的接口
+export interface RetryConfig {
+    retries?: number;
+    retryDelay?: number;
+    retryOnStatusCodes?: number[];
+}
+
+export interface TimeoutConfig {
+    timeout?: number;
+}
+
+// 组合接口
+export interface FetchWithRetryOptions extends FetchRequestConfig, RetryConfig {}
+export interface FetchWithTimeoutOptions extends FetchRequestConfig, TimeoutConfig {}
