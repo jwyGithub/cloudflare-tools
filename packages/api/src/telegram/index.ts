@@ -1,13 +1,13 @@
 export interface SendMessageString {
-    token: string;
-    chatId: string;
+    token?: string;
+    chatId?: string;
     message?: string;
 }
 
 export interface SendMessageArray {
-    token: string;
-    chatId: string;
-    message?: string;
+    token?: string;
+    chatId?: string;
+    message?: string[];
 }
 
 export async function sendMessage({ token, chatId, message }: SendMessageString): Promise<Response>;
