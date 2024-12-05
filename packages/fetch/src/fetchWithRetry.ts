@@ -23,7 +23,13 @@ export async function fetchWithRetry(url: string, options: Omit<FetchWithRetryOp
         try {
             const response = await fetch.request({ url, ...restOptions });
 
-            if (retryOnStatusCodes.includes(response.status) && attempt < retries) {
+            if (retryOnStatusCodes.includes(response.status) && attempt <= retries) {
+                if (onError) {
+                    const errorResult = onError(new Error(`Request failed with status ${response.status}`), attempt);
+                    if (errorResult instanceof Promise) {
+                        await errorResult;
+                    }
+                }
                 await new Promise(resolve => setTimeout(resolve, retryDelay));
                 return makeRequest();
             }
@@ -36,7 +42,7 @@ export async function fetchWithRetry(url: string, options: Omit<FetchWithRetryOp
                     await errorResult;
                 }
             }
-            if (attempt < retries) {
+            if (attempt <= retries) {
                 await new Promise(resolve => setTimeout(resolve, retryDelay));
                 return makeRequest();
             }
