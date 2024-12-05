@@ -8,7 +8,7 @@ interface FetchWithRetryOptions extends FetchRequestConfig {
     onError?: (error: Error, attempt: number) => void | Promise<void>; // 错误回调
 }
 
-export async function fetchWithRetry<T = any>(url: string, options: Omit<FetchWithRetryOptions, 'url'>): Promise<FetchResponse<T>> {
+export async function fetchWithRetry(url: string, options: Omit<FetchWithRetryOptions, 'url'>): Promise<FetchResponse> {
     const {
         retries = defaultRetryConfig.retries,
         retryDelay = defaultRetryConfig.retryDelay,
@@ -18,10 +18,10 @@ export async function fetchWithRetry<T = any>(url: string, options: Omit<FetchWi
     } = options;
     let attempt = 0;
 
-    const makeRequest = async (): Promise<FetchResponse<T>> => {
+    const makeRequest = async (): Promise<FetchResponse> => {
         attempt++;
         try {
-            const response = await fetch.request<T>({ url, ...restOptions });
+            const response = await fetch.request({ url, ...restOptions });
 
             if (retryOnStatusCodes.includes(response.status) && attempt < retries) {
                 await new Promise(resolve => setTimeout(resolve, retryDelay));

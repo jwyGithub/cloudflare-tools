@@ -21,7 +21,7 @@ export class FetchClient {
     }
 
     // 核心请求方法
-    async request<T>(config: FetchRequestConfig & { retries?: number; retryDelay?: number; timeout?: number }): Promise<FetchResponse<T>> {
+    async request(config: FetchRequestConfig & { retries?: number; retryDelay?: number; timeout?: number }): Promise<FetchResponse> {
         let finalConfig = { ...config };
 
         // 将默认重试配置合并到请求配置中
@@ -48,7 +48,7 @@ export class FetchClient {
         const controller = new AbortController();
         const signal = config.signal || controller.signal;
 
-        const makeRequest = async (): Promise<FetchResponse<T>> => {
+        const makeRequest = async (): Promise<FetchResponse> => {
             attempt++;
 
             // 启动超时计时器
@@ -66,12 +66,13 @@ export class FetchClient {
 
                 clearTimeout(timeoutId);
 
-                const responseData: FetchResponse<T> = {
-                    data: await response.json(),
+                const responseData: FetchResponse = {
+                    data: response,
                     status: response.status,
                     statusText: response.statusText,
                     headers: response.headers,
-                    config: finalConfig
+                    config: finalConfig,
+                    ok: response.ok
                 };
 
                 // 应用响应拦截器
@@ -117,8 +118,8 @@ export class FetchClient {
      * ```
      */
 
-    get<T>(url: string, config?: Omit<FetchRequestConfig, 'method' | 'url'>): Promise<FetchResponse<T>> {
-        return this.request<T>({ ...config, url, method: 'GET' });
+    get(url: string, config?: Omit<FetchRequestConfig, 'method' | 'url'>): Promise<FetchResponse> {
+        return this.request({ ...config, url, method: 'GET' });
     }
 
     /**
@@ -143,8 +144,8 @@ export class FetchClient {
      * ```
      */
 
-    post<T>(url: string, body?: any, config?: Omit<FetchRequestConfig, 'method' | 'url' | 'body'>): Promise<FetchResponse<T>> {
-        return this.request<T>({ ...config, url, method: 'POST', body });
+    post(url: string, body?: any, config?: Omit<FetchRequestConfig, 'method' | 'url' | 'body'>): Promise<FetchResponse> {
+        return this.request({ ...config, url, method: 'POST', body });
     }
 
     /**
@@ -168,8 +169,8 @@ export class FetchClient {
      * console.log(responseWithParams.data);
      * ```
      */
-    put<T>(url: string, body?: any, config?: Omit<FetchRequestConfig, 'method' | 'url' | 'body'>): Promise<FetchResponse<T>> {
-        return this.request<T>({ ...config, url, method: 'PUT', body });
+    put(url: string, body?: any, config?: Omit<FetchRequestConfig, 'method' | 'url' | 'body'>): Promise<FetchResponse> {
+        return this.request({ ...config, url, method: 'PUT', body });
     }
 
     /**
@@ -186,7 +187,7 @@ export class FetchClient {
      * console.log(responseWithParams.data);
      * ```
      */
-    delete<T>(url: string, config?: Omit<FetchRequestConfig, 'method' | 'url'>): Promise<FetchResponse<T>> {
-        return this.request<T>({ ...config, url, method: 'DELETE' });
+    delete(url: string, config?: Omit<FetchRequestConfig, 'method' | 'url'>): Promise<FetchResponse> {
+        return this.request({ ...config, url, method: 'DELETE' });
     }
 }

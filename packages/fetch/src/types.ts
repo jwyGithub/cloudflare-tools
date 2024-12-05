@@ -3,7 +3,7 @@ export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
 export interface FetchRequestConfig {
     url: string;
     method?: HttpMethod;
-    headers?: Record<string, string>;
+    headers?: HeadersInit;
     body?: any;
     params?: Record<string, any>;
     timeout?: number;
@@ -13,12 +13,13 @@ export interface FetchRequestConfig {
     retryOnStatusCodes?: number[];
 }
 
-export interface FetchResponse<T = any> {
-    data: T;
+export interface FetchResponse {
+    data: Response;
     status: number;
     statusText: string;
-    headers: Headers;
+    headers: HeadersInit;
     config: FetchRequestConfig;
+    ok: boolean;
 }
 
 export type FetchInterceptor<T> = (configOrResponse: T) => T | Promise<T>;

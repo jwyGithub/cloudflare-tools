@@ -3,7 +3,7 @@ import { fetch } from '../index';
 
 const DEFAULT_TIMEOUT = 10000; // 默认超时时间为 10 秒
 
-export async function fetchWithTimeout<T>(url: string, options: Omit<FetchWithTimeoutOptions, 'url'>): Promise<FetchResponse<T>> {
+export async function fetchWithTimeout(url: string, options: Omit<FetchWithTimeoutOptions, 'url'>): Promise<FetchResponse> {
     const { timeout = DEFAULT_TIMEOUT, ...restOptions } = options;
 
     const controller = new AbortController();
@@ -14,7 +14,7 @@ export async function fetchWithTimeout<T>(url: string, options: Omit<FetchWithTi
     }, timeout);
 
     try {
-        const response = await fetch.request<T>({
+        const response = await fetch.request({
             url,
             ...restOptions,
             signal
