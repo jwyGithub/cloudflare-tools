@@ -24,7 +24,7 @@
         "lint-staged": "lint-staged"
     },
     "devDependencies": {
-        "@cloudflare/workers-types": "^4.20241112.0",
+        "@cloudflare/workers-types": "^4.20241202.0",
         "@jiangweiye/eslint-config": "0.1.13",
         "@jiangweiye/prettier-config": "^0.0.18",
         "@jiangweiye/tsconfig": "^0.0.11",

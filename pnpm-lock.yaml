@@ -9,8 +9,8 @@ importers:
   .:
     devDependencies:
       '@cloudflare/workers-types':
-        specifier: ^4.20241112.0
-        version: 4.20241112.0
+        specifier: ^4.20241202.0
+        version: 4.20241202.0
       '@jiangweiye/eslint-config':
         specifier: 0.1.13
         version: 0.1.13(@typescript-eslint/utils@8.15.0)(@vue/compiler-sfc@3.4.33)(eslint@9.12.0)(typescript@5.6.3)(vitest@2.1.5)
@@ -120,8 +120,8 @@ packages:
     bundledDependencies:
       - is-unicode-supported
 
-  /@cloudflare/workers-types@4.20241112.0:
-    resolution: {integrity: sha512-Q4p9bAWZrX14bSCKY9to19xl0KMU7nsO5sJ2cTVspHoypsjPUMeQCsjHjmsO2C4Myo8/LPeDvmqFmkyNAPPYZw==}
+  /@cloudflare/workers-types@4.20241202.0:
+    resolution: {integrity: sha512-ts4JD6Wih62SDmlc+OcnN1Db/DgEBcl+BUpJr7ht7pgWP81PCLyPcomgDXIeAqt2NLiOIOMMkYQZ1ZtWDo3/8A==}
     dev: true
 
   /@es-joy/jsdoccomment@0.48.0:
