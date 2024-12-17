@@ -16,6 +16,7 @@
     "scripts": {
         "build:api": "pnpm --filter @jiangweiye/worker-api build",
         "build:fetch": "pnpm --filter @jiangweiye/worker-fetch build",
+        "test:fetch": "pnpm --filter @jiangweiye/worker-fetch test",
         "build:service": "pnpm --filter @jiangweiye/worker-service build",
         "build:shared": "pnpm --filter @jiangweiye/worker-shared build",
         "lint": "eslint .",
@@ -24,7 +25,8 @@
         "lint-staged": "lint-staged"
     },
     "devDependencies": {
-        "@cloudflare/workers-types": "^4.20241202.0",
+        "@cloudflare/vitest-pool-workers": "^0.5.37",
+        "@cloudflare/workers-types": "^4.20241205.0",
         "@jiangweiye/eslint-config": "0.1.13",
         "@jiangweiye/prettier-config": "^0.0.18",
         "@jiangweiye/tsconfig": "^0.0.11",
@@ -36,7 +38,7 @@
         "typescript": "^5.6.3",
         "vite": "^5.4.11",
         "vite-plugin-dts": "4.3.0",
-        "vitest": "^2.1.5"
+        "vitest": "^2.1.8"
     },
     "simple-git-hooks": {
         "pre-commit": "pnpm lint-staged"
