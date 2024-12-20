@@ -60,7 +60,7 @@ interface FetchWithRetryOptions extends FetchRequestConfig {
 export async function fetchWithRetry(
     input: RequestInfo | URL,
     options: Omit<FetchWithRetryOptions, 'url'> = defaultRetryConfig
-): Promise<FetchResponse> {
+): Promise<FetchResponse<Response>> {
     const {
         retries = defaultRetryConfig.retries,
         retryDelay = defaultRetryConfig.retryDelay,
@@ -90,11 +90,11 @@ export async function fetchWithRetry(
             const response = await fetch(request);
 
             // 转换为标准响应格式
-            const fetchResponse: FetchResponse = {
+            const fetchResponse: FetchResponse<Response> = {
                 status: response.status,
                 statusText: response.statusText,
                 headers: Object.fromEntries(response.headers.entries()),
-                data: await response.json(),
+                data: response,
                 config: { url: requestUrl, ...restOptions },
                 ok: response.ok
             };

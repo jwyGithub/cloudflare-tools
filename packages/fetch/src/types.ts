@@ -1,5 +1,11 @@
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
 
+// 定义响应类型枚举
+export type ResponseType = 'json' | 'text' | 'blob' | 'arrayBuffer' | 'formData' | 'stream';
+
+// 为流式响应添加专门的类型
+export type StreamResponse = ReadableStream<Uint8Array>;
+
 export interface FetchRequestConfig {
     url: string;
     method?: HttpMethod;
@@ -7,14 +13,16 @@ export interface FetchRequestConfig {
     body?: any;
     params?: Record<string, any>;
     timeout?: number;
-    signal?: AbortSignal; // 添加 signal 属性
+    signal?: AbortSignal;
     retries?: number;
     retryDelay?: number;
     retryOnStatusCodes?: number[];
+    // 添加响应类型配置
+    responseType?: ResponseType;
 }
 
-export interface FetchResponse {
-    data: Response;
+export interface FetchResponse<T = any> {
+    data: T;
     status: number;
     statusText: string;
     headers: HeadersInit;

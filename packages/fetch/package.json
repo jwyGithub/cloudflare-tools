@@ -1,17 +1,16 @@
 {
-    "name": "@jiangweiye/worker-fetch",
+    "name": "cloudflare-tools-fetch",
     "type": "module",
-    "version": "0.0.7",
-    "description": "cloudflare-service-fetch",
+    "version": "0.0.0",
+    "description": "cloudflare-tools-fetch",
     "author": "jiangweiye <jiangweiye@outlook.com> (https://github.com/jwyGithub)",
     "license": "SEE LICENSE IN LICENSE.md",
-    "homepage": "https://github.com/jwyGithub/cloudflare-shared",
+    "homepage": "https://github.com/jwyGithub/cloudflare-tools",
     "publishConfig": {
         "access": "public"
     },
     "keywords": [
         "cloudflare",
-        "service",
         "worker",
         "fetch"
     ],

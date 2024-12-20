@@ -1,4 +1,4 @@
-import type { FetchInterceptor, FetchRequestConfig, FetchResponse, HttpMethod } from './types';
+import type { FetchInterceptor, FetchRequestConfig, FetchResponse, HttpMethod, StreamResponse } from './types';
 
 /** 默认重试配置 */
 export const defaultRetryConfig = {
@@ -87,10 +87,10 @@ export class FetchClient {
      * @param input - URL 字符串、URL 对象或 Request 对象
      * @param config - 请求配置
      */
-    async request(
+    async request<T = any>(
         input: RequestInfo | URL | FetchRequestConfig,
-        config: Partial<FetchRequestConfig> & { retries?: number; retryDelay?: number; timeout?: number } = {}
-    ): Promise<FetchResponse> {
+        config: Partial<FetchRequestConfig> = {}
+    ): Promise<FetchResponse<T>> {
         // 处理输入参数
         let finalConfig: FetchRequestConfig & {
             retries: number;
@@ -124,7 +124,7 @@ export class FetchClient {
             };
         }
 
-        // 合并��认配置
+        // 合并认配置
         finalConfig.retries = finalConfig.retries ?? defaultRetryConfig.retries;
         finalConfig.retryDelay = finalConfig.retryDelay ?? defaultRetryConfig.retryDelay;
         finalConfig.timeout = finalConfig.timeout ?? defaultTimeoutConfig.timeout;
@@ -145,7 +145,7 @@ export class FetchClient {
         const controller = new AbortController();
         const signal = config.signal || controller.signal;
 
-        const makeRequest = async (): Promise<FetchResponse> => {
+        const makeRequest = async (): Promise<FetchResponse<T>> => {
             attempt++;
 
             let timeoutId: number | undefined;
@@ -167,8 +167,35 @@ export class FetchClient {
                 const response = await fetch(request);
                 timeoutId && clearTimeout(timeoutId);
 
-                const responseData: FetchResponse = {
-                    data: await response.json(),
+                // 根据 responseType 处理响应数据
+                let data: any;
+                switch (finalConfig.responseType) {
+                    case 'text':
+                        data = await response.text();
+                        break;
+                    case 'blob':
+                        data = await response.blob();
+                        break;
+                    case 'arrayBuffer':
+                        data = await response.arrayBuffer();
+                        break;
+                    case 'formData':
+                        data = await response.formData();
+                        break;
+                    case 'stream':
+                        if (!response.body) {
+                            throw new Error('Response body is null');
+                        }
+                        data = response.body;
+                        break;
+                    case 'json':
+                    default:
+                        data = await response.json();
+                        break;
+                }
+
+                const responseData: FetchResponse<T> = {
+                    data,
                     status: response.status,
                     statusText: response.statusText,
                     headers: Object.fromEntries(response.headers.entries()),
@@ -215,78 +242,247 @@ export class FetchClient {
      * // 基本 GET 请求
      * const response = await client.get('https://api.example.com/data');
      *
-     * // 带查询参数
-     * const response = await client.get('https://api.example.com/data', {
-     *     params: { id: 1 },
-     *     headers: { 'Accept': 'application/json' }
+     * // 带类型的 JSON 响应
+     * interface User { id: number; name: string }
+     * const user = await client.get<User>('https://api.example.com/user/1');
+     *
+     * // 获取文本响应
+     * const text = await client.get<string>('https://api.example.com/text', {
+     *     responseType: 'text'
      * });
      * ```
      */
-    get(input: RequestInfo | URL, config?: Omit<FetchRequestConfig, 'method' | 'url'>): Promise<FetchResponse> {
-        return this.request(input, { ...config, method: 'GET' });
+    get<T = any>(input: RequestInfo | URL, config?: Omit<FetchRequestConfig, 'method' | 'url'>): Promise<FetchResponse<T>> {
+        return this.request<T>(input, { ...config, method: 'GET' });
     }
 
     /**
      * POST 请求
      * @example
      * ```typescript
-     * // 发送 JSON 数据
-     * const response = await client.post('https://api.example.com/data', {
-     *     name: 'test',
-     *     value: 123
-     * });
+     * // 发送和接收 JSON 数据
+     * interface CreateUserRequest { name: string; age: number }
+     * interface CreateUserResponse { id: number; name: string }
      *
-     * // 带额外配置
-     * const response = await client.post('https://api.example.com/data',
-     *     { key: 'value' },
-     *     { timeout: 5000 }
+     * const response = await client.post<CreateUserResponse, CreateUserRequest>(
+     *     '/api/users',
+     *     { name: 'John', age: 30 }
+     * );
+     *
+     * // 上传文件并接收 JSON 响应
+     * const formData = new FormData();
+     * formData.append('file', file);
+     * const response = await client.post<UploadResponse, FormData>(
+     *     '/api/upload',
+     *     formData,
+     *     { responseType: 'json' }
      * );
      * ```
      */
-    post(input: RequestInfo | URL, body?: any, config?: Omit<FetchRequestConfig, 'method' | 'url' | 'body'>): Promise<FetchResponse> {
-        return this.request(input, { ...config, method: 'POST', body });
+    post<TResponse = any, TBody = any>(
+        input: RequestInfo | URL,
+        body?: TBody,
+        config?: Omit<FetchRequestConfig, 'method' | 'url' | 'body'>
+    ): Promise<FetchResponse<TResponse>> {
+        return this.request<TResponse>(input, { ...config, method: 'POST', body });
     }
 
     /**
      * PUT 请求
      * @example
      * ```typescript
-     * // 基本使用
-     * const response = await client.put('https://api.example.com/data/1', {
-     *     name: 'updated',
-     *     value: 456
-     * });
+     * // 更新资源
+     * interface UpdateUserRequest { name: string }
+     * interface UpdateUserResponse { id: number; name: string }
      *
-     * // 带额外配置
-     * const response = await client.put('https://api.example.com/data/1',
-     *     { status: 'active' },
-     *     {
-     *         headers: { 'Content-Type': 'application/json' },
-     *         timeout: 5000
-     *     }
+     * const response = await client.put<UpdateUserResponse, UpdateUserRequest>(
+     *     '/api/users/1',
+     *     { name: 'New Name' }
      * );
      * ```
      */
-    put(input: RequestInfo | URL, body?: any, config?: Omit<FetchRequestConfig, 'method' | 'url' | 'body'>): Promise<FetchResponse> {
-        return this.request(input, { ...config, method: 'PUT', body });
+    put<TResponse = any, TBody = any>(
+        input: RequestInfo | URL,
+        body?: TBody,
+        config?: Omit<FetchRequestConfig, 'method' | 'url' | 'body'>
+    ): Promise<FetchResponse<TResponse>> {
+        return this.request<TResponse>(input, { ...config, method: 'PUT', body });
     }
 
     /**
      * DELETE 请求
      * @example
      * ```typescript
-     * // 基本使用
-     * const response = await client.delete('https://api.example.com/data/1');
+     * // 基本删除
+     * const response = await client.delete('/api/users/1');
      *
-     * // 带查询参数和配置
-     * const response = await client.delete('https://api.example.com/data', {
-     *     params: { id: 1 },
-     *     headers: { 'Authorization': 'Bearer token' },
-     *     timeout: 5000
-     * });
+     * // 带响应类型的删除
+     * interface DeleteResponse { success: boolean }
+     * const response = await client.delete<DeleteResponse>('/api/users/1');
      * ```
      */
-    delete(input: RequestInfo | URL, config?: Omit<FetchRequestConfig, 'method' | 'url'>): Promise<FetchResponse> {
-        return this.request(input, { ...config, method: 'DELETE' });
+    delete<T = any>(input: RequestInfo | URL, config?: Omit<FetchRequestConfig, 'method' | 'url'>): Promise<FetchResponse<T>> {
+        return this.request<T>(input, { ...config, method: 'DELETE' });
+    }
+
+    /**
+     * PATCH 请求
+     * @example
+     * ```typescript
+     * // 部分更新
+     * interface PatchUserRequest { name?: string; age?: number }
+     * interface PatchUserResponse { id: number; name: string; age: number }
+     *
+     * const response = await client.patch<PatchUserResponse, PatchUserRequest>(
+     *     '/api/users/1',
+     *     { age: 31 }
+     * );
+     * ```
+     */
+    patch<TResponse = any, TBody = any>(
+        input: RequestInfo | URL,
+        body?: TBody,
+        config?: Omit<FetchRequestConfig, 'method' | 'url' | 'body'>
+    ): Promise<FetchResponse<TResponse>> {
+        return this.request<TResponse>(input, { ...config, method: 'PATCH', body });
+    }
+
+    /**
+     * 发送请求并返回 JSON 数据
+     * @example
+     * ```typescript
+     * // 带类型提示的 JSON 响应
+     * interface User { id: number; name: string }
+     * const user = await client.fetchJson<User>('https://api.example.com/user/1');
+     * console.log(user.data.name); // 类型安全
+     * ```
+     */
+    async fetchJson<T = any>(input: RequestInfo | URL, config?: Omit<FetchRequestConfig, 'url'>): Promise<FetchResponse<T>> {
+        const response = await this.request(input, {
+            ...config,
+            headers: {
+                Accept: 'application/json',
+                ...config?.headers
+            }
+        });
+        return response as FetchResponse<T>;
+    }
+
+    /**
+     * 发送请求并返回 Blob 数据
+     * @example
+     * ```typescript
+     * // 下载文件
+     * const blob = await client.fetchBlob('https://example.com/file.pdf');
+     * const url = URL.createObjectURL(blob.data);
+     * ```
+     */
+    async fetchBlob(input: RequestInfo | URL, config?: Omit<FetchRequestConfig, 'url'>): Promise<FetchResponse<Blob>> {
+        const response = await fetch(new Request(input, config));
+        const blob = await response.blob();
+        return {
+            data: blob,
+            status: response.status,
+            statusText: response.statusText,
+            headers: Object.fromEntries(response.headers.entries()),
+            config: { url: response.url, ...config },
+            ok: response.ok
+        };
+    }
+
+    /**
+     * 发送请求并返回文本数据
+     * @example
+     * ```typescript
+     * // 获取文本内容
+     * const text = await client.fetchText('https://example.com/readme.txt');
+     * console.log(text.data);
+     * ```
+     */
+    async fetchText(input: RequestInfo | URL, config?: Omit<FetchRequestConfig, 'url'>): Promise<FetchResponse<string>> {
+        const response = await fetch(new Request(input, config));
+        const text = await response.text();
+        return {
+            data: text,
+            status: response.status,
+            statusText: response.statusText,
+            headers: Object.fromEntries(response.headers.entries()),
+            config: { url: response.url, ...config },
+            ok: response.ok
+        };
+    }
+
+    /**
+     * 发送请求并返回 ArrayBuffer 数据
+     * @example
+     * ```typescript
+     * // 处理二进制数据
+     * const buffer = await client.fetchArrayBuffer('https://example.com/data.bin');
+     * const view = new DataView(buffer.data);
+     * ```
+     */
+    async fetchArrayBuffer(input: RequestInfo | URL, config?: Omit<FetchRequestConfig, 'url'>): Promise<FetchResponse<ArrayBuffer>> {
+        const response = await fetch(new Request(input, config));
+        const buffer = await response.arrayBuffer();
+        return {
+            data: buffer,
+            status: response.status,
+            statusText: response.statusText,
+            headers: Object.fromEntries(response.headers.entries()),
+            config: { url: response.url, ...config },
+            ok: response.ok
+        };
+    }
+
+    /**
+     * 发送请求并返回 FormData 数据
+     * @example
+     * ```typescript
+     * // 获取表单数据
+     * const form = await client.fetchFormData('https://example.com/form');
+     * const field = form.data.get('fieldName');
+     * ```
+     */
+    async fetchFormData(input: RequestInfo | URL, config?: Omit<FetchRequestConfig, 'url'>): Promise<FetchResponse<FormData>> {
+        const response = await fetch(new Request(input, config));
+        const formData = await response.formData();
+        return {
+            data: formData,
+            status: response.status,
+            statusText: response.statusText,
+            headers: Object.fromEntries(response.headers.entries()),
+            config: { url: response.url, ...config },
+            ok: response.ok
+        };
+    }
+
+    /**
+     * 发送请求并返回流数据
+     * @example
+     * ```typescript
+     * // 处理流式数据
+     * const stream = await client.fetchStream('https://example.com/large-file');
+     * const reader = stream.data.getReader();
+     * while (true) {
+     *   const { done, value } = await reader.read();
+     *   if (done) break;
+     *   // 处理 value (Uint8Array)
+     * }
+     * ```
+     */
+    async fetchStream(input: RequestInfo | URL, config?: Omit<FetchRequestConfig, 'url'>): Promise<FetchResponse<StreamResponse>> {
+        const response = await fetch(new Request(input, config));
+        if (!response.body) {
+            throw new Error('Response body is null');
+        }
+
+        return {
+            data: response.body,
+            status: response.status,
+            statusText: response.statusText,
+            headers: Object.fromEntries(response.headers.entries()),
+            config: { url: response.url, ...config },
+            ok: response.ok
+        };
     }
 }

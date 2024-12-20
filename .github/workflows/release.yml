@@ -11,7 +11,7 @@ on:
 
 jobs:
     analyze-commit:
-        if: "!contains(github.event.head_commit.message, '[skip ci]')"
+        if: ${{ !contains(github.event.head_commit.message, '[skip ci]') }}
         runs-on: ubuntu-latest
         outputs:
             package: ${{ steps.get-package.outputs.package }}
@@ -30,7 +30,6 @@ jobs:
                   if [[ $COMMIT_MSG =~ ^feat:|^fix:|^chore: ]]; then
                     echo "package=all" >> $GITHUB_OUTPUT
                   elif [[ $COMMIT_MSG =~ ^$$([^]]+)$$|^([^-]+)- ]]; then
-                    # 支持 [api]-feat 和 api-feat 两种格式
                     PACKAGE="${BASH_REMATCH[1]}${BASH_REMATCH[2]}"
                     echo "package=${PACKAGE}" >> $GITHUB_OUTPUT
                   fi
@@ -94,35 +93,72 @@ jobs:
                   PACKAGE=${{ needs.analyze-commit.outputs.package }}
                   VERSION_TYPE=${{ needs.analyze-commit.outputs.version_type }}
 
-                  # 更新版本号
+                  # 如果是 tools 包，需要先更新依赖包版本
+                  if [ "$PACKAGE" = "tools" ]; then
+                    echo "Updating dependencies versions..."
+                    
+                    # 更新 shared 包版本
+                    cd packages/shared
+                    pnpm version $VERSION_TYPE --no-git-tag-version
+                    cd ../..
+                    
+                    # 更新 fetch 包版本
+                    cd packages/fetch
+                    pnpm version $VERSION_TYPE --no-git-tag-version
+                    cd ../..
+                  fi
+
+                  # 更新当前包版本
                   cd packages/$PACKAGE
                   pnpm version $VERSION_TYPE --no-git-tag-version
                   cd ../..
 
-                  # 提交所有更改（包括根目录的 package.json）
+                  # 提交更改
                   git add .
                   git commit -m "chore(release): update $PACKAGE package version [skip ci]"
                   git push origin main
 
-                  # 构建
+                  # 如果是 tools 包，需要先构建并发布依赖
+                  if [ "$PACKAGE" = "tools" ]; then
+                    echo "Building and publishing dependencies..."
+                    
+                    # 构建并发布 shared 包
+                    pnpm run build:shared
+                    cd packages/shared
+                    pnpm publish --access public --no-git-checks
+                    cd ../..
+                    
+                    # 构建并发布 fetch 包
+                    pnpm run build:fetch
+                    cd packages/fetch
+                    pnpm publish --access public --no-git-checks
+                    cd ../..
+                  fi
+
+                  # 构建当前包
                   pnpm run build:$PACKAGE
 
-                  # 发布
-                  pnpm --filter @jiangweiye/worker-$PACKAGE publish --no-git-checks
+                  # 发布当前包
+                  cd packages/$PACKAGE
+                  pnpm publish --access public --no-git-checks
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH }}
 
             - name: Release all packages
               if: needs.analyze-commit.outputs.package == 'all'
               run: |
-                  # 创建临时分支来处理所有更新
+                  VERSION_TYPE=${{ needs.analyze-commit.outputs.version_type }}
+
+                  # 创建临时分支
                   git checkout -b temp-release-branch
 
                   # 更新所有包的版本
-                  for package in api fetch service shared; do
-                    cd packages/$package
-                    pnpm version ${{ needs.analyze-commit.outputs.version_type }} --no-git-tag-version
-                    cd ../..
+                  for dir in packages/*; do
+                    if [ -d "$dir" ]; then
+                      cd "$dir"
+                      pnpm version $VERSION_TYPE --no-git-tag-version
+                      cd ../..
+                    fi
                   done
 
                   # 提交更改
@@ -133,16 +169,14 @@ jobs:
                   git fetch origin main
                   git rebase origin/main
 
-                  # 推送更改
+                  # 推送更改到主分支
                   git push origin temp-release-branch:main
 
-                  # 构建所有包
-                  pnpm run build:api
-                  pnpm run build:fetch
-                  pnpm run build:service
-                  pnpm run build:shared
+                  # 按依赖顺序构建并发布包
+                  pnpm run build
 
                   # 发布所有包
-                  pnpm -r publish --no-git-checks
+                  pnpm -r publish --access public --no-git-checks
+
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH }}

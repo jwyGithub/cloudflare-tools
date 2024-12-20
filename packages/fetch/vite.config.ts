@@ -6,7 +6,7 @@ export default defineConfig({
     build: {
         lib: {
             entry: [resolve(__dirname, './index.ts')],
-            name: 'WorkerFetch'
+            name: 'cloudflareToolsFetch'
         },
         target: ['es2022'],
         minify: true,

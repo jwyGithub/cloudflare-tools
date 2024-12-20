@@ -1,12 +1,12 @@
 import type { FetchRequestConfig, FetchResponse } from './types';
-import { defaultTimeoutConfig } from './fetch';
 
 /**
  * fetchWithRetry 的配置选项接口
  * @interface FetchWithRetryOptions
  * @extends {FetchRequestConfig}
  */
-interface FetchWithTimeoutOptions extends FetchRequestConfig {
+interface FetchWithTimeoutOptions extends Omit<FetchRequestConfig, 'url' | 'responseType'> {
+    url?: string;
     /** 超时时间（毫秒） */
     timeout?: number;
     /**
@@ -50,58 +50,39 @@ interface FetchWithTimeoutOptions extends FetchRequestConfig {
  * @returns Promise<FetchResponse> 返回处理后的响应对象
  * @throws {Error} 当请求超时时抛出超时错误
  */
-export async function fetchWithTimeout(
-    input: RequestInfo | URL,
-    options: Omit<FetchWithTimeoutOptions, 'url'> = defaultTimeoutConfig
-): Promise<FetchResponse> {
-    const { timeout = defaultTimeoutConfig.timeout, onTimeout, ...restOptions } = options;
-
+export async function fetchWithTimeout(input: RequestInfo | URL, options: FetchWithTimeoutOptions = {}): Promise<FetchResponse<Response>> {
+    const { timeout = 0, onTimeout, ...restOptions } = options;
     const controller = new AbortController();
-    const signal = options.signal || controller.signal;
-
-    let timeoutId: number | undefined;
-    if (timeout > 0) {
-        timeoutId = setTimeout(() => {
-            controller.abort(new DOMException('Timeout', 'TimeoutError'));
-            onTimeout?.(new Error('请求超时'));
-        }, timeout);
-    }
+    let timeoutId: number | null = null;
 
     try {
-        // 处理 Request 对象的情况
-        let request: Request;
-        let requestUrl: string;
-
-        if (input instanceof Request) {
-            requestUrl = input.url;
-            request = new Request(input, {
-                ...restOptions,
-                signal
-            });
-        } else {
-            requestUrl = input.toString();
-            request = new Request(requestUrl, {
-                ...restOptions,
-                signal
-            });
+        if (timeout > 0) {
+            timeoutId = setTimeout(() => {
+                controller.abort();
+                onTimeout?.(new Error('请求超时'));
+            }, timeout);
         }
 
-        const response = await fetch(request);
+        const response = await fetch(
+            new Request(input, {
+                ...restOptions,
+                signal: controller.signal
+            })
+        );
+
         timeoutId && clearTimeout(timeoutId);
 
-        const fetchResponse: FetchResponse = {
+        return {
+            data: response,
             status: response.status,
             statusText: response.statusText,
-            headers: Object.fromEntries(response.headers.entries()),
-            data: await response.json(),
-            config: { url: requestUrl, ...restOptions },
+            headers: response.headers,
+            config: { url: response.url, ...restOptions },
             ok: response.ok
         };
-
-        return fetchResponse;
     } catch (error: any) {
         timeoutId && clearTimeout(timeoutId);
-        if (error.name === 'TimeoutError') {
+        if (error.name === 'AbortError') {
             throw new DOMException('The request timed out', 'TimeoutError');
         }
         throw error;

@@ -1,0 +1,60 @@
+{
+    "name": "cloudflare-tools",
+    "type": "module",
+    "version": "0.0.0",
+    "description": "cloudflare-tools",
+    "author": "jiangweiye <jiangweiye@outlook.com> (https://github.com/jwyGithub)",
+    "license": "SEE LICENSE IN LICENSE.md",
+    "homepage": "https://github.com/jwyGithub/cloudflare-tools",
+    "publishConfig": {
+        "access": "public"
+    },
+    "keywords": [
+        "cloudflare",
+        "worker",
+        "tools"
+    ],
+    "exports": {
+        ".": {
+            "types": "./dist/types/index.d.ts",
+            "import": "./dist/index.js",
+            "require": "./dist/index.cjs"
+        },
+        "./fetch": {
+            "types": "./dist/types/fetch.d.ts",
+            "import": "./dist/fetch.js",
+            "require": "./dist/fetch.cjs"
+        },
+        "./shared": {
+            "types": "./dist/types/src/shared.d.ts",
+            "import": "./dist/shared.js",
+            "require": "./dist/shared.cjs"
+        }
+    },
+    "main": "./dist/index.umd.cjs",
+    "module": "./dist/index.js",
+    "types": "./dist/types/index.d.ts",
+    "typesVersions": {
+        "*": {
+            "*": [
+                "./dist/types/*"
+            ],
+            "shared": [
+                "./dist/types/src/shared.d.ts"
+            ],
+            "fetch": [
+                "./dist/types/src/fetch.d.ts"
+            ]
+        }
+    },
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "vite build"
+    },
+    "dependencies": {
+        "cloudflare-tools-fetch": "workspace:*",
+        "cloudflare-tools-shared": "workspace:*"
+    }
+}

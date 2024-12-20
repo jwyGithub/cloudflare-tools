@@ -1,8 +1,8 @@
 {
-    "name": "@jiangweiye/worker-shared",
+    "name": "cloudflare-tools-shared",
     "type": "module",
-    "version": "0.0.2",
-    "description": "cloudflare-shared",
+    "version": "0.0.0",
+    "description": "cloudflare-tools-shared",
     "author": "jiangweiye <jiangweiye@outlook.com> (https://github.com/jwyGithub)",
     "license": "SEE LICENSE IN LICENSE.md",
     "homepage": "https://github.com/jwyGithub/cloudflare-tools",
@@ -11,8 +11,8 @@
     },
     "keywords": [
         "cloudflare",
-        "shared",
-        "worker"
+        "tools",
+        "shared"
     ],
     "exports": {
         ".": {
@@ -28,6 +28,7 @@
         "dist"
     ],
     "scripts": {
-        "build": "vite build"
+        "build": "vite build",
+        "test": "vitest"
     }
 }

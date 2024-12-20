@@ -1,88 +1,78 @@
-# cloudflare-tools
+# Cloudflare Tools
 
-cloudflare tool code.
+一个用于 Cloudflare Workers 的工具集合，提供了多个实用的功能模块。
 
-## Packages
+## 📦 包含的模块
 
--   [@jiangweiye/cloudflare-service](#cloudflare-service)
--   [@jiangweiye/cloudflare-fetch](#cloudflare-fetch)
--   [@jiangweiye/cloudflare-shared](#cloudflare-shared)
+### 🚀 @jiangweiye/worker-fetch
 
-### cloudflare-service
+一个功能强大的 HTTP 客户端，专为 Cloudflare Workers 环境优化。
 
-[使用示例](https://github.com/jwyGithub/cloudflare-shared/tree/main/packages/service)
+**主要特性：**
 
-```typescript
-export declare class Service {
-    static success(data: any, message?: string): Response;
-    static clientError(reason?: string): Response;
-    static notFound(reason?: string): Response;
-    static unauthorized(reason?: string): Response;
-    static gatewayTimeout(reason?: string): Response;
-    static serverError(reason?: string): Response;
-    static unknownError(reason?: string): Response;
-}
+- 超时控制
+- 自动重试
+- 请求/响应拦截器
+- 流式数据处理
+- 完整的 TypeScript 支持
+
+[详细文档](./packages/fetch/README.md)
+
+### 🛠️ @jiangweiye/cloudflare-service
+
+用于处理 Cloudflare Workers 响应的工具类。
+
+**主要功能：**
+
+- 标准化的响应格式
+- 常用状态码处理
+- 错误处理封装
+
+[详细文档](./packages/service/README.md)
+
+### 🔧 @jiangweiye/cloudflare-shared
+
+通用工具函数集合。
+
+**核心功能：**
+
+- Base64 编解码
+- 流数据处理
+- 文本转换工具
+
+[详细文档](./packages/shared/README.md)
+
+## 📥 安装
+
+每个包都可以独立安装使用：
+
+```bash
+# Fetch 客户端
+npm install @jiangweiye/worker-fetch
+
+# Service 工具
+npm install @jiangweiye/cloudflare-service
+
+# 通用工具
+npm install @jiangweiye/cloudflare-shared
 ```
 
-### cloudflare-fetch
+## 🔗 快速链接
 
-[使用示例](https://github.com/jwyGithub/cloudflare-shared/tree/main/packages/fetch)
+- [Fetch 客户端文档](./packages/fetch/README.md)
+- [Service 工具文档](./packages/service/README.md)
+- [通用工具文档](./packages/shared/README.md)
 
-```typescript
-import { AxiosErrorInterceptor, AxiosInterceptor, AxiosRequestConfig, AxiosResponse } from './types';
+## 📄 许可证
 
-export declare class FetchClient {
-    private requestInterceptors;
-    private responseInterceptors;
-    private errorInterceptors;
-    request<T = any>(config: AxiosRequestConfig): Promise<AxiosResponse<T>>;
-    get<T = any>(url: string, config?: Omit<AxiosRequestConfig, 'url' | 'method'>): Promise<AxiosResponse<T>>;
-    post<T = any>(url: string, data?: any, config?: Omit<AxiosRequestConfig, 'url' | 'method' | 'body'>): Promise<AxiosResponse<T>>;
-    put<T = any>(url: string, data?: any, config?: Omit<AxiosRequestConfig, 'url' | 'method' | 'body'>): Promise<AxiosResponse<T>>;
-    delete<T = any>(url: string, config?: Omit<AxiosRequestConfig, 'url' | 'method'>): Promise<AxiosResponse<T>>;
-    useRequestInterceptor(interceptor: AxiosInterceptor<AxiosRequestConfig>): void;
-    useResponseInterceptor(interceptor: AxiosInterceptor<AxiosResponse<any>>): void;
-    useErrorInterceptor(interceptor: AxiosErrorInterceptor): void;
-    private parseHeaders;
-}
-export declare const fetchClient: FetchClient;
-```
+Apache License 2.0
 
-### cloudflare-shared
+## 🤝 贡献
 
-[使用示例](https://github.com/jwyGithub/cloudflare-shared/tree/main/packages/shared)
+欢迎提交 issue 和 PR！
 
-```typescript
-export declare class TextCode {
-    /**
-     * @description Base64 decode a string
-     * @param {string} s Encoded string
-     * @returns {string} - Decoded string
-     */
-    static base64Encode(s: string): string;
-    /**
-     * @description Base64 decode a string
-     * @param {string} s Encoded string
-     * @returns {string} - Decoded string
-     */
-    static base64Decode(s: string): string;
-    /**
-     * @description Convert a stream to text
-     * @param {ReadableStream} stream - ReadableStream
-     * @returns {Promise<string>} - Promise<string>
-     */
-    static streamToText(stream: ReadableStream): Promise<string>;
-    /**
-     * @description Convert a blob to text
-     * @param {Blob} blob - Blob
-     * @returns {Promise<string>} - Promise<string>
-     */
-    static blobToText(blob: Blob): Promise<string>;
-    /**
-     * @description Convert an array buffer to text
-     * @param {ArrayBuffer} buffer - ArrayBuffer
-     * @returns {string} - Text
-     */
-    static arrayBufferToText(buffer: ArrayBuffer): string;
-}
-```
+---
+
+<div align="center">
+  <sub>Built with ❤️ for Cloudflare Workers</sub>
+</div>
