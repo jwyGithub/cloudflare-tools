@@ -1,15 +1,15 @@
 <div align="center">
-  <h1>@jiangweiye/worker-fetch</h1>
+  <h1>cloudflare-tools-fetch</h1>
   <p>一个基于原生 fetch API 的轻量级 HTTP 客户端，提供超时控制、自动重试、拦截器等功能。</p>
   <p>
-    <a href="https://www.npmjs.com/package/@jiangweiye/worker-fetch">
-      <img src="https://img.shields.io/npm/v/@jiangweiye/worker-fetch.svg" alt="npm version" />
+    <a href="https://www.npmjs.com/package/cloudflare-tools-fetch">
+      <img src="https://img.shields.io/npm/v/cloudflare-tools-fetch.svg" alt="npm version" />
     </a>
-    <a href="https://www.npmjs.com/package/@jiangweiye/worker-fetch">
-      <img src="https://img.shields.io/npm/dm/@jiangweiye/worker-fetch.svg" alt="npm downloads" />
+    <a href="https://www.npmjs.com/package/cloudflare-tools-fetch">
+      <img src="https://img.shields.io/npm/dm/cloudflare-tools-fetch.svg" alt="npm downloads" />
     </a>
     <a href="https://github.com/yourusername/worker-fetch/blob/main/LICENSE">
-      <img src="https://img.shields.io/npm/l/@jiangweiye/worker-fetch.svg" alt="license" />
+      <img src="https://img.shields.io/npm/l/cloudflare-tools-fetch.svg" alt="license" />
     </a>
   </p>
 </div>
@@ -29,13 +29,13 @@
 
 ```bash
 # npm
-npm install @jiangweiye/worker-fetch
+npm install cloudflare-tools-fetch
 
 # yarn
-yarn add @jiangweiye/worker-fetch
+yarn add cloudflare-tools-fetch
 
 # pnpm
-pnpm add @jiangweiye/worker-fetch
+pnpm add cloudflare-tools-fetch
 ```
 
 ## 🚀 快速开始
@@ -43,7 +43,7 @@ pnpm add @jiangweiye/worker-fetch
 ### 基本使用
 
 ```typescript
-import { FetchClient } from '@jiangweiye/worker-fetch';
+import { FetchClient } from 'cloudflare-tools-fetch';
 
 const client = new FetchClient();
 
@@ -82,7 +82,7 @@ client.useResponseInterceptor(response => {
 
 ```typescript
 // 使用 fetchWithTimeout
-import { fetchWithTimeout } from '@jiangweiye/worker-fetch';
+import { fetchWithTimeout } from 'cloudflare-tools-fetch';
 
 const response = await fetchWithTimeout('https://api.example.com/data', {
     timeout: 5000, // 5秒超时
@@ -101,7 +101,7 @@ const response = await client.request('https://api.example.com/data', {
 
 ```typescript
 // 使用 fetchWithRetry
-import { fetchWithRetry } from '@jiangweiye/worker-fetch';
+import { fetchWithRetry } from 'cloudflare-tools-fetch';
 
 const response = await fetchWithRetry('https://api.example.com/data', {
     retries: 3, // 最多重试3次
@@ -131,7 +131,7 @@ const response = await client.request(request, {
 ### 📦 流式数据处理
 
 ```typescript
-import { FetchClient } from '@jiangweiye/worker-fetch';
+import { FetchClient } from 'cloudflare-tools-fetch';
 
 const client = new FetchClient();
 const response = await client.fetchStream('https://api.example.com/stream', {

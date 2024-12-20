@@ -1,15 +1,15 @@
 <div align="center">
-  <h1>@jiangweiye/worker-shared</h1>
+  <h1>cloudflare-tools-shared</h1>
   <p>Cloudflare Worker 通用工具库，提供编码转换、IP 验证、消息通知等功能</p>
   <p>
-    <a href="https://www.npmjs.com/package/@jiangweiye/worker-shared">
-      <img src="https://img.shields.io/npm/v/@jiangweiye/worker-shared.svg" alt="npm version" />
+    <a href="https://www.npmjs.com/package/cloudflare-tools-shared">
+      <img src="https://img.shields.io/npm/v/cloudflare-tools-shared.svg" alt="npm version" />
     </a>
-    <a href="https://www.npmjs.com/package/@jiangweiye/worker-shared">
-      <img src="https://img.shields.io/npm/dm/@jiangweiye/worker-shared.svg" alt="npm downloads" />
+    <a href="https://www.npmjs.com/package/cloudflare-tools-shared">
+      <img src="https://img.shields.io/npm/dm/cloudflare-tools-shared.svg" alt="npm downloads" />
     </a>
     <a href="https://github.com/yourusername/worker-shared/blob/main/LICENSE">
-      <img src="https://img.shields.io/npm/l/@jiangweiye/worker-shared.svg" alt="license" />
+      <img src="https://img.shields.io/npm/l/cloudflare-tools-shared.svg" alt="license" />
     </a>
   </p>
 </div>
@@ -18,13 +18,13 @@
 
 ```bash
 # npm
-npm install @jiangweiye/worker-shared
+npm install cloudflare-tools-shared
 
 # yarn
-yarn add @jiangweiye/worker-shared
+yarn add cloudflare-tools-shared
 
 # pnpm
-pnpm add @jiangweiye/worker-shared
+pnpm add cloudflare-tools-shared
 ```
 
 ## 🚀 功能特性
@@ -34,7 +34,7 @@ pnpm add @jiangweiye/worker-shared
 #### Base64 编码/解码
 
 ```typescript
-import { base64Decode, base64Encode, tryBase64Decode, tryBase64Encode } from '@jiangweiye/worker-shared';
+import { base64Decode, base64Encode, tryBase64Decode, tryBase64Encode } from 'cloudflare-tools-shared';
 
 // 基本使用
 const encoded = base64Encode('Hello World');
@@ -48,7 +48,7 @@ const safeDecoded = tryBase64Decode(encoded, s => `解码失败: ${s}`);
 #### 十六进制编码/解码
 
 ```typescript
-import { hexDecode, hexEncode, tryHexDecode, tryHexEncode } from '@jiangweiye/worker-shared';
+import { hexDecode, hexEncode, tryHexDecode, tryHexEncode } from 'cloudflare-tools-shared';
 
 // 基本使用
 const encoded = hexEncode('Hello');
@@ -62,7 +62,7 @@ const safeDecoded = tryHexDecode(encoded);
 #### URL 编码/解码
 
 ```typescript
-import { tryUrlDecode, tryUrlEncode } from '@jiangweiye/worker-shared';
+import { tryUrlDecode, tryUrlEncode } from 'cloudflare-tools-shared';
 
 // 安全的 URL 编码/解码
 const encoded = tryUrlEncode('Hello World');
@@ -72,7 +72,7 @@ const decoded = tryUrlDecode(encoded);
 ### 🔍 IP 验证
 
 ```typescript
-import { IpValidator, validateIp } from '@jiangweiye/worker-shared';
+import { IpValidator, validateIp } from 'cloudflare-tools-shared';
 
 // 函数式用法
 validateIp('192.168.1.1', ['192.168.*.*']); // true
@@ -86,7 +86,7 @@ validator.validate('192.168.1.1'); // true
 ### 📨 Telegram 通知
 
 ```typescript
-import { notifyTelegram } from '@jiangweiye/worker-shared';
+import { notifyTelegram } from 'cloudflare-tools-shared';
 
 // 发送单条消息
 await notifyTelegram({

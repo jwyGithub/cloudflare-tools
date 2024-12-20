@@ -4,7 +4,7 @@
 
 ## 📦 包含的模块
 
-### 🚀 @jiangweiye/worker-fetch
+### 🚀 cloudflare-tools-fetch
 
 一个功能强大的 HTTP 客户端，专为 Cloudflare Workers 环境优化。
 
@@ -18,19 +18,7 @@
 
 [详细文档](./packages/fetch/README.md)
 
-### 🛠️ @jiangweiye/cloudflare-service
-
-用于处理 Cloudflare Workers 响应的工具类。
-
-**主要功能：**
-
-- 标准化的响应格式
-- 常用状态码处理
-- 错误处理封装
-
-[详细文档](./packages/service/README.md)
-
-### 🔧 @jiangweiye/cloudflare-shared
+### 🔧 cloudflare-tools-shared
 
 通用工具函数集合。
 
@@ -48,19 +36,16 @@
 
 ```bash
 # Fetch 客户端
-npm install @jiangweiye/worker-fetch
-
-# Service 工具
-npm install @jiangweiye/cloudflare-service
+npm install cloudflare-tools-fetch
 
 # 通用工具
-npm install @jiangweiye/cloudflare-shared
+npm install cloudflare-tools-shared
+
 ```
 
 ## 🔗 快速链接
 
 - [Fetch 客户端文档](./packages/fetch/README.md)
-- [Service 工具文档](./packages/service/README.md)
 - [通用工具文档](./packages/shared/README.md)
 
 ## 📄 许可证
