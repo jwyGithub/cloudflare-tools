@@ -1,7 +1,7 @@
 {
     "name": "cloudflare-tools",
     "type": "module",
-    "version": "0.0.0",
+    "version": "0.1.0",
     "description": "cloudflare-tools",
     "author": "jiangweiye <jiangweiye@outlook.com> (https://github.com/jwyGithub)",
     "license": "SEE LICENSE IN LICENSE.md",
