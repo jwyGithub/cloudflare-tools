@@ -33,7 +33,7 @@ describe('fetchWithRetry', () => {
             const response = await fetchWithRetry(`${BASE_URL}/error`, {
                 retries: 2,
                 retryDelay: 100,
-                retryOnStatusCodes: [500],
+                retryOn: [500],
                 onError
             });
 
@@ -53,6 +53,19 @@ describe('fetchWithRetry', () => {
             ).rejects.toThrow();
             expect(onError).toHaveBeenCalledTimes(3);
         });
+
+        it('应该在请求错误时进行重试', async () => {
+            const onError = vi.fn();
+            const invalidUrl = 'https://f2ca6207-43fc-4967-bddb-cda1fd5eb268.nicoo.us.kg/vps-trojan?sub=https://trojan.cmliussss.net/auto';
+            await expect(
+                fetchWithRetry(invalidUrl, {
+                    retries: 2,
+                    retryDelay: 100,
+                    onError
+                })
+            ).rejects.toThrow();
+            expect(onError).toHaveBeenCalledTimes(3);
+        });
     });
 
     describe('错误回调', () => {
@@ -61,7 +74,7 @@ describe('fetchWithRetry', () => {
             const response = await fetchWithRetry(`${BASE_URL}/error`, {
                 retries: 1,
                 retryDelay: 100,
-                retryOnStatusCodes: [500],
+                retryOn: response => response.status === 500,
                 onError
             });
 
@@ -74,7 +87,7 @@ describe('fetchWithRetry', () => {
             const response = await fetchWithRetry(`${BASE_URL}/error`, {
                 retries: 1,
                 retryDelay: 100,
-                retryOnStatusCodes: [500],
+                retryOn: [500],
                 onError
             });
 

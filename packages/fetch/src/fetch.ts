@@ -7,7 +7,7 @@ export const defaultRetryConfig = {
     /** 默认重试间隔（毫秒） */
     retryDelay: 1000,
     /** 默认需要重试的状态码 */
-    retryOnStatusCodes: [500, 502, 503, 504]
+    retryOn: [500, 502, 503, 504]
 };
 
 /** 默认超时配置 */

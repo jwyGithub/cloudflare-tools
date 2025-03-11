@@ -7,12 +7,6 @@ import { defaultRetryConfig } from '../index';
  * @extends {FetchRequestConfig}
  */
 interface FetchWithRetryOptions extends FetchRequestConfig {
-    /** 最大重试次数 */
-    retries?: number;
-    /** 重试间隔时间（毫秒） */
-    retryDelay?: number;
-    /** 需要重试的 HTTP 状态码数组 */
-    retryOnStatusCodes?: number[];
     /**
      * 错误回调函数
      * @param error - 捕获到的错误
@@ -64,7 +58,7 @@ export async function fetchWithRetry(
     const {
         retries = defaultRetryConfig.retries,
         retryDelay = defaultRetryConfig.retryDelay,
-        retryOnStatusCodes = defaultRetryConfig.retryOnStatusCodes,
+        retryOn = defaultRetryConfig.retryOn,
         onError,
         ...restOptions
     } = options;
@@ -100,7 +94,8 @@ export async function fetchWithRetry(
             };
 
             // 检查是否需要重试
-            if (retryOnStatusCodes.includes(fetchResponse.status) && attempt <= retries) {
+            const shouldRetry = typeof retryOn === 'function' ? retryOn(response) : retryOn.includes(fetchResponse.status);
+            if (shouldRetry && attempt <= retries) {
                 if (onError) {
                     const errorResult = onError(new Error(`请求失败，状态码 ${fetchResponse.status}`), attempt);
                     if (errorResult instanceof Promise) {
