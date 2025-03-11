@@ -56,7 +56,7 @@ describe('fetchWithRetry', () => {
 
         it('应该在请求错误时进行重试', async () => {
             const onError = vi.fn();
-            const invalidUrl = 'https://f2ca6207-43fc-4967-bddb-cda1fd5eb268.nicoo.us.kg/vps-trojan?sub=https://trojan.cmliussss.net/auto';
+            const invalidUrl = 'https://42d55df4-4c8e-43d8-a81e-e5c117e29c78.nicoo.us.kg/vps-trojan?sub=https://trojan.cmliussss.net/auto';
             await expect(
                 fetchWithRetry(invalidUrl, {
                     retries: 2,

@@ -21,7 +21,7 @@ export interface FetchRequestConfig {
     responseType?: ResponseType;
 }
 
-export interface FetchResponse<T = any> {
+export interface FetchResponse<T = Response> {
     data: T;
     status: number;
     statusText: string;
@@ -34,12 +34,14 @@ export type FetchInterceptor<T> = (configOrResponse: T) => T | Promise<T>;
 
 // 为重试和超时功能定义专门的接口
 export interface RetryConfig {
-    /** 最大重试次数 */
-    retries?: number;
-    /** 重试间隔时间（毫秒） */
-    retryDelay?: number;
-    /** 需要重试的 HTTP 状态码数组 */
-    retryOn?: number[] | ((response: Response) => boolean);
+    /** 最大重试延迟时间（毫秒） */
+    maxRetryDelay?: number;
+    /** 请求超时时间（毫秒） */
+    timeout?: number;
+    /** 是否启用指数退避 */
+    exponentialBackoff?: boolean;
+    /** 随机因子范围 (0-1) */
+    jitter?: number;
 }
 
 export interface TimeoutConfig {
