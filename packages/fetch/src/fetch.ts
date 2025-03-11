@@ -2,12 +2,13 @@ import type { FetchInterceptor, FetchRequestConfig, FetchResponse, HttpMethod, S
 
 /** 默认重试配置 */
 export const defaultRetryConfig = {
-    /** 默认不启用重试 */
     retries: 0,
-    /** 默认重试间隔（毫秒） */
     retryDelay: 1000,
-    /** 默认需要重试的状态码 */
-    retryOn: [500, 502, 503, 504]
+    maxRetryDelay: 30000,
+    timeout: 10000,
+    retryOn: [408, 429, 500, 502, 503, 504],
+    exponentialBackoff: true,
+    jitter: 0.1
 };
 
 /** 默认超时配置 */
@@ -64,7 +65,7 @@ export class FetchClient {
     /** 请求拦截器数组 */
     private requestInterceptors: FetchInterceptor<FetchRequestConfig & { retries: number }>[] = [];
     /** 响应拦截器数组 */
-    private responseInterceptors: FetchInterceptor<FetchResponse>[] = [];
+    private responseInterceptors: FetchInterceptor<FetchResponse<any>>[] = [];
 
     /**
      * 添加请求拦截器
@@ -78,7 +79,7 @@ export class FetchClient {
      * 添加响应拦截器
      * @param interceptor - 响应拦截器函数
      */
-    useResponseInterceptor(interceptor: FetchInterceptor<FetchResponse>) {
+    useResponseInterceptor(interceptor: FetchInterceptor<FetchResponse<any>>) {
         this.responseInterceptors.push(interceptor);
     }
 

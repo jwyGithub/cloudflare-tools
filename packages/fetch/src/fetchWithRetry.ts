@@ -1,4 +1,5 @@
 import type { FetchRequestConfig, FetchResponse, RetryConfig } from './types';
+import { defaultRetryConfig } from './fetch';
 
 // 自定义错误类
 export class FetchRetryError extends Error {
@@ -14,7 +15,7 @@ export class FetchRetryError extends Error {
 }
 
 // fetchWithRetry 的配置选项接口
-export interface FetchWithRetryOptions extends FetchRequestConfig, Partial<RetryConfig> {
+interface FetchWithRetryOptions extends FetchRequestConfig, Partial<RetryConfig> {
     /** 错误回调函数 */
     onError?: (error: Error | FetchRetryError, attempt: number) => void | Promise<void>;
     /** 重试回调函数 */
@@ -23,17 +24,6 @@ export interface FetchWithRetryOptions extends FetchRequestConfig, Partial<Retry
 
 // 常量定义
 const MAX_RETRIES = 30;
-
-// 默认重试配置
-export const defaultRetryConfig: Partial<FetchWithRetryOptions> = {
-    retries: 0,
-    retryDelay: 1000,
-    maxRetryDelay: 30000,
-    timeout: 10000,
-    retryOn: [408, 429, 500, 502, 503, 504],
-    exponentialBackoff: true,
-    jitter: 0.1
-};
 
 /**
  * 计算重试延迟时间
