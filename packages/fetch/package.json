@@ -1,7 +1,7 @@
 {
     "name": "cloudflare-tools-fetch",
     "type": "module",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "description": "cloudflare-tools-fetch",
     "author": "jiangweiye <jiangweiye@outlook.com> (https://github.com/jwyGithub)",
     "license": "SEE LICENSE IN LICENSE.md",
