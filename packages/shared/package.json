@@ -1,7 +1,7 @@
 {
     "name": "cloudflare-tools-shared",
     "type": "module",
-    "version": "0.1.1",
+    "version": "0.2.0",
     "description": "cloudflare-tools-shared",
     "author": "jiangweiye <jiangweiye@outlook.com> (https://github.com/jwyGithub)",
     "license": "SEE LICENSE IN LICENSE.md",
