@@ -6,7 +6,7 @@ export type ResponseType = 'json' | 'text' | 'blob' | 'arrayBuffer' | 'formData'
 // 为流式响应添加专门的类型
 export type StreamResponse = ReadableStream<Uint8Array>;
 
-export interface FetchRequestConfig {
+export interface FetchRequestConfig extends RequestInit {
     url: string;
     method?: HttpMethod;
     headers?: HeadersInit;
